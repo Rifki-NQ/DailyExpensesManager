@@ -1,4 +1,5 @@
 import pandas as pd
+import yaml
 
 class CheckInput:
     @staticmethod
@@ -13,20 +14,24 @@ class CheckInput:
             return False
         
 class DataIO:
-    def __init__(self, file_path):
-        self.file_path = file_path
-        
-    def read_csv(self) -> pd.DataFrame | None:
+    @staticmethod
+    def read_csv(self, file_path) -> pd.DataFrame | None:
         try:
-            df = pd.read_csv(self.file_path)
+            df = pd.read_csv(file_path)
             return df
         except FileNotFoundError as e:
             print(f"failed to read {e.filename} because the file does not exist!")
             return None
         except pd.errors.EmptyDataError:
-            if self.file_path == "data/salary_data.csv":
-                print("failed to read the salary data because it's empty!")
-                return None
-            else:
-                print("failed to read the data because it's empty!")
-                return None
+            print("failed to read the data because it's empty!")
+            return None
+        
+    @staticmethod    
+    def read_config():
+        try:
+            with open("data/config.yaml", "r") as file:
+                config_data = yaml.safe_load(file)
+            return config_data
+        except FileNotFoundError as e:
+            print(f"failed to read {e.filename} because the file does not exist!")
+            return None
