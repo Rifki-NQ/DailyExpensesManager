@@ -17,6 +17,7 @@ class DataIO:
     @staticmethod
     def read_csv(file_path) -> pd.DataFrame | None:
         try:
+            pd.set_option("display.max_rows", None)
             df = pd.read_csv(file_path)
             return df
         except FileNotFoundError as e:
@@ -35,3 +36,11 @@ class DataIO:
         except FileNotFoundError as e:
             print(f"failed to read {e.filename} because the file does not exist!")
             return None
+        
+    @staticmethod
+    def save_config(data):
+        try:
+            with open("data/config.yaml", "w") as file:
+                yaml.safe_dump(data, file, sort_keys=False)
+        except yaml.YAMLError as e:
+            print(e)
