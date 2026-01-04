@@ -17,6 +17,7 @@ class MainMenu:
         print("< ------------------ >")
         if self.choosen_menu == 1:
             print("1. Show current salary simulation")
+            print("2. Change curerent salary simulation")
     
     def input_menu_choices(self):
         while True:
@@ -42,6 +43,8 @@ class MainMenu:
             salary_data = Salary()
             if self.choosen_sub_menu == 1:
                 salary_data.show_current_simulation()
+            elif self.choosen_sub_menu == 2:
+                salary_data.change_current_simulation()
     
     def run(self):
         while True:
@@ -52,5 +55,5 @@ class MainMenu:
             self.run_choosen_method()
     
 if __name__ == "__main__":
-    app = MainMenu(1, 1)
+    app = MainMenu(1, 2)
     app.run()
