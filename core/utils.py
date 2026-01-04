@@ -15,7 +15,7 @@ class CheckInput:
         
 class DataIO:
     @staticmethod
-    def read_csv(self, file_path) -> pd.DataFrame | None:
+    def read_csv(file_path) -> pd.DataFrame | None:
         try:
             df = pd.read_csv(file_path)
             return df

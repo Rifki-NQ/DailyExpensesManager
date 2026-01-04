@@ -7,14 +7,6 @@ class MainMenu:
         self.total_sub_menu = total_sub_menu
         self.choosen_menu = 0
         self.choosen_sub_menu = 0
-        self.current_simulation = self._load_simulation()
-    
-    def _load_simulation(self):
-        config = DataIO.read_config()
-        if config is None:
-            print("Failed to load config file!")
-        else:
-            return config["current_simulation"]
     
     def show_menu(self):
         print("Daily Expenses Manager")
