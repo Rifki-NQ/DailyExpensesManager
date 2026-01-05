@@ -1,16 +1,21 @@
 import pandas as pd
-from core.utils import DataIO, CheckInput
+from core.utils import DataIO, CheckInput, Sorter
 
 class Salary:
     def __init__(self):
         self.simulation_index = 0
+        self.salary_data_filepath = "data/salary_data.csv"
+        self.config_filepath = "data/config.yaml"
+        self.sorter = Sorter(self.salary_data_filepath)
+        self.salary_handler = DataIO(self.salary_data_filepath)
+        self.config_handler = DataIO(self.config_filepath)
     
     def show_current_simulation(self):
         current_simulation = self._load_salary_simulation()
         print(current_simulation)
     
     def _load_simulation_index(self):
-        config = DataIO.read_config()
+        config = self.config_handler.read_config()
         if config["current_simulation_index"] is None:
             print("Empty simulation index from the config!")
             return None
@@ -19,7 +24,7 @@ class Salary:
             
     def _load_salary_simulation(self):
         self.simulation_index = self._load_simulation_index()
-        df_salary = DataIO.read_csv("data/salary_data.csv")
+        df_salary = self.salary_handler.read_csv()
         if self.simulation_index is None or df_salary is None:
             return
         df_salary = df_salary.iloc[self.simulation_index].tolist()
@@ -29,7 +34,7 @@ class Salary:
         return current_salary_simulation
     
     def _get_all_salary(self):
-        all_salary = DataIO.read_csv("data/salary_data.csv")
+        all_salary = self.salary_handler.read_csv()
         if all_salary is None:
             return
         all_salary.index = all_salary.index + 1
@@ -45,5 +50,5 @@ class Salary:
                 index -= 1
                 break
         updated_simulation = {"current_simulation_index": index}
-        DataIO.save_config(updated_simulation)
+        self.config_handler.save_config(updated_simulation)
         print("Simulation changed successfully!")

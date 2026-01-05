@@ -38,10 +38,9 @@ class DataIO:
             print(f"failed to read {e.filename} because the file does not exist!")
             return None
         
-    @staticmethod
-    def save_config(data):
+    def save_config(self, data):
         try:
-            with open("data/config.yaml", "w") as file:
+            with open(self.file_path, "w") as file:
                 yaml.safe_dump(data, file, sort_keys=False)
         except yaml.YAMLError as e:
             print(e)
