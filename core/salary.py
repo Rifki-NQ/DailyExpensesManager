@@ -1,32 +1,32 @@
 import pandas as pd
 from core.utils import DataIO, CheckInput, Sorter
+from core.exceptions import EmptySimulationIndexError, CSVFileNotFoundError
+from core.exceptions import EmptySalaryDataError, EmptyConfigDataError
 
-class Salary:
+class SalaryLogic:
     def __init__(self):
         self.simulation_index = 0
-        self.salary_data_filepath = "data/salary_data.csv"
+        self.salary_data_filepath = "data/salary_data1.csv"
         self.config_filepath = "data/config.yaml"
         self.sorter = Sorter(self.salary_data_filepath)
         self.salary_handler = DataIO(self.salary_data_filepath)
         self.config_handler = DataIO(self.config_filepath)
     
-    def show_current_simulation(self):
-        current_simulation = self._load_salary_simulation()
-        print(current_simulation)
-    
     def _load_simulation_index(self):
         config = self.config_handler.read_config()
         if config["current_simulation_index"] is None:
-            print("Empty simulation index from the config!")
-            return None
+            raise EmptySimulationIndexError("Empty simulation index from the config!")
         else:
             return config["current_simulation_index"]
             
-    def _load_salary_simulation(self):
+    def load_salary_simulation(self):
         self.simulation_index = self._load_simulation_index()
-        df_salary = self.salary_handler.read_csv()
-        if self.simulation_index is None or df_salary is None:
-            return
+        try:
+            df_salary = self.salary_handler.read_csv()
+        except FileNotFoundError as e:
+            raise CSVFileNotFoundError(f"failed to read {self.salary_data_filepath} because the file does not exist!")
+        except pd.errors.EmptyDataError:
+            raise EmptySalaryDataError("failed to read the data because it's empty!")
         df_salary = df_salary.iloc[self.simulation_index].tolist()
         current_salary_simulation = df_salary
         #convert np.int64 to int
@@ -52,3 +52,18 @@ class Salary:
         updated_simulation = {"current_simulation_index": index}
         self.config_handler.save_config(updated_simulation)
         print("Simulation changed successfully!")
+
+class SalaryCLI:
+    def __init__(self):
+        self.salary_logic = SalaryLogic()
+    
+    def show_current_simulation(self):
+        try:
+            current_simulation = self.salary_logic.load_salary_simulation()
+            print(current_simulation)
+        except EmptySimulationIndexError as e:
+            print(e)
+        except CSVFileNotFoundError as e:
+            print(e)
+        except EmptySalaryDataError as e:
+            print(e)

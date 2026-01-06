@@ -1,4 +1,4 @@
-from core.salary import Salary
+from core.salary import SalaryCLI
 from core.utils import CheckInput, DataIO
 
 class MainMenu:
@@ -8,7 +8,7 @@ class MainMenu:
         self.is_running = True
         self.choosen_menu = 0
         self.choosen_sub_menu = 0
-        self.salary_data = Salary()
+        self.salary_data = SalaryCLI()
     
     def show_menu(self):
         print("Daily Expenses Manager")
