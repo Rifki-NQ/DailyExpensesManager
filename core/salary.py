@@ -2,6 +2,7 @@ import pandas as pd
 from core.utils import DataIO, CheckInput, Sorter
 from core.exceptions import EmptySimulationIndexError, CSVFileNotFoundError
 from core.exceptions import EmptySalaryDataError, EmptyConfigDataError
+from core.exceptions import InvalidInputtedIndexError, IncorrectConfigFilePath
 
 class SalaryLogic:
     def __init__(self):
@@ -12,11 +13,13 @@ class SalaryLogic:
         self.salary_handler = DataIO(self.salary_data_filepath)
         self.config_handler = DataIO(self.config_filepath)
     
-    def _load_simulation_index(self):
+    def _load_simulation_index(self) -> int:
         config = self.config_handler.read_config()
+        if config["current_simulation_index"] is None:
+            raise EmptySimulationIndexError("empty simulation index from the config!")
         return config["current_simulation_index"]
             
-    def load_salary_simulation(self):
+    def load_salary_simulation(self) -> list[str | int]:
         self.simulation_index = self._load_simulation_index()
         df_salary = self.salary_handler.read_csv()
         df_salary = df_salary.iloc[self.simulation_index].tolist()
@@ -25,23 +28,20 @@ class SalaryLogic:
         current_salary_simulation[1] = int(current_salary_simulation[1])
         return current_salary_simulation
     
-    def _get_all_salary(self):
+    def get_all_salary(self) -> pd.DataFrame:
         all_salary = self.salary_handler.read_csv()
         all_salary.index = all_salary.index + 1
         return all_salary
     
-    def change_current_simulation(self):
-        salary_data = self._get_all_salary()
-        print(salary_data)
-        while True:
-            index = input("Select which simulation to load (by index): ")
-            if CheckInput.check_digit(index, 1, len(salary_data)):
-                index = int(index)
-                index -= 1
-                break
+    def check_inputted_index(self, index, min_value, max_value) -> bool:
+        if CheckInput.check_digit(index, min_value, max_value):
+            return True
+    
+    def update_current_simulation(self, index):
+        index = int(index)
+        index -= 1
         updated_simulation = {"current_simulation_index": index}
         self.config_handler.save_config(updated_simulation)
-        print("Simulation changed successfully!")
 
 class SalaryCLI:
     def __init__(self):
@@ -59,3 +59,19 @@ class SalaryCLI:
             print(e)
         except EmptySalaryDataError as e:
             print(e)
+            
+    def change_current_simulation(self):
+        all_salary = self.salary_logic.get_all_salary()
+        print(all_salary)
+        while True:
+            try:
+                index = input("Select which simulation to load (by index): ")
+                if self.salary_logic.check_inputted_index(index, 1, len(all_salary)):
+                    break
+            except InvalidInputtedIndexError as e:
+                print(e)
+        try:
+            self.salary_logic.update_current_simulation(index)
+        except IncorrectConfigFilePath as e:
+            print(e)
+        print("Simulation changed successfully!")

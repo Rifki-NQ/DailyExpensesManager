@@ -12,3 +12,9 @@ class EmptySalaryDataError(ValueError):
         
 class EmptyConfigDataError(ValueError):
     pass
+
+class InvalidInputtedIndexError(ValueError):
+    pass
+
+class IncorrectConfigFilePath(FileNotFoundError):
+    pass
