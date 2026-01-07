@@ -3,6 +3,9 @@ class EmptySimulationIndexError(ValueError):
         
 class CSVFileNotFoundError(FileNotFoundError):
     pass
+
+class ConfigFileNotFoundError(FileNotFoundError):
+    pass
         
 class EmptySalaryDataError(ValueError):
     pass

@@ -1,6 +1,7 @@
 import pandas as pd
 import yaml
-from core.exceptions import CSVFileNotFoundError, EmptySalaryDataError, EmptyConfigDataError
+from core.exceptions import CSVFileNotFoundError, ConfigFileNotFoundError
+from core.exceptions import EmptySalaryDataError, EmptyConfigDataError
 
 class CheckInput:
     @staticmethod
@@ -19,18 +20,24 @@ class DataIO:
         self.file_path = file_path
     
     def read_csv(self) -> pd.DataFrame:
-        pd.set_option("display.max_rows", None)
-        df = pd.read_csv(self.file_path)
-        return df
+        try:
+            pd.set_option("display.max_rows", None)
+            df = pd.read_csv(self.file_path)
+            return df
+        except FileNotFoundError:
+            raise CSVFileNotFoundError(f"failed to read ({self.file_path}) because the file does not exist!")
+        except pd.errors.EmptyDataError:
+            raise EmptySalaryDataError(f"failed to read ({self.file_path}) because the file is empty!")
          
     def read_config(self):
         try:
             with open(self.file_path, "r") as file:
                 config_data = yaml.safe_load(file)
+            if config_data is None:
+                raise EmptyConfigDataError(f"failed to read ({self.file_path}) because the file is empty!")
             return config_data
-        except FileNotFoundError as e:
-            print(f"failed to read {e.filename} because the file does not exist!")
-            return None
+        except FileNotFoundError:
+            raise ConfigFileNotFoundError(f"failed to read ({self.file_path}) because the file does not exist!")
         
     def save_config(self, data):
         try:
