@@ -14,7 +14,9 @@ class SalaryLogic:
     
     def _load_simulation_index(self):
         config = self.config_handler.read_config()
-        if config["current_simulation_index"] is None:
+        if config is None:
+            raise EmptyConfigDataError(f"Empty config data from the file! ({self.config_filepath})")
+        elif config["current_simulation_index"] is None:
             raise EmptySimulationIndexError("Empty simulation index from the config!")
         else:
             return config["current_simulation_index"]
@@ -61,6 +63,8 @@ class SalaryCLI:
         try:
             current_simulation = self.salary_logic.load_salary_simulation()
             print(current_simulation)
+        except EmptyConfigDataError as e:
+            print(e)
         except EmptySimulationIndexError as e:
             print(e)
         except CSVFileNotFoundError as e:
