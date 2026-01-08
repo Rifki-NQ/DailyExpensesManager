@@ -61,8 +61,15 @@ class SalaryCLI:
             print(e)
             
     def change_current_simulation(self):
-        all_salary = self.salary_logic.get_all_salary()
-        print(all_salary)
+        try:
+            all_salary = self.salary_logic.get_all_salary()
+            print(all_salary)
+        except CSVFileNotFoundError as e:
+            print(e)
+            return
+        except EmptySalaryDataError as e:
+            print(e)
+            return
         while True:
             try:
                 index = input("Select which simulation to load (by index): ")
@@ -74,4 +81,5 @@ class SalaryCLI:
             self.salary_logic.update_current_simulation(index)
         except IncorrectConfigFilePath as e:
             print(e)
+            return
         print("Simulation changed successfully!")
