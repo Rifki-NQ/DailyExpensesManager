@@ -1,8 +1,7 @@
 import pandas as pd
 from core.utils import DataIO, CheckInput, Sorter
-from core.exceptions import EmptySimulationIndexError, CSVFileNotFoundError
-from core.exceptions import EmptySalaryDataError, EmptyConfigDataError
-from core.exceptions import InvalidInputtedIndexError, IncorrectConfigFilePath
+from core.exceptions import MissingSimulationIndexError, EmptyDataAppError, FileError
+from core.exceptions import InvalidInputIndexError, ConfigFileNotFoundError
 
 class SalaryLogic:
     def __init__(self):
@@ -16,7 +15,7 @@ class SalaryLogic:
     def _load_simulation_index(self) -> int:
         config = self.config_handler.read_config()
         if config["current_simulation_index"] is None:
-            raise EmptySimulationIndexError("empty simulation index from the config!")
+            raise MissingSimulationIndexError("empty simulation index from the config!")
         return config["current_simulation_index"]
             
     def load_salary_simulation(self) -> list[str | int]:
@@ -51,23 +50,15 @@ class SalaryCLI:
         try:
             current_simulation = self.salary_logic.load_salary_simulation()
             print(current_simulation)
-        except EmptyConfigDataError as e:
+        except FileError as e:
             print(e)
-        except EmptySimulationIndexError as e:
-            print(e)
-        except CSVFileNotFoundError as e:
-            print(e)
-        except EmptySalaryDataError as e:
-            print(e)
+            return
             
     def change_current_simulation(self):
         try:
             all_salary = self.salary_logic.get_all_salary()
             print(all_salary)
-        except CSVFileNotFoundError as e:
-            print(e)
-            return
-        except EmptySalaryDataError as e:
+        except EmptyDataAppError as e:
             print(e)
             return
         while True:
@@ -75,11 +66,11 @@ class SalaryCLI:
                 index = input("Select which simulation to load (by index): ")
                 if self.salary_logic.check_inputted_index(index, 1, len(all_salary)):
                     break
-            except InvalidInputtedIndexError as e:
+            except InvalidInputIndexError as e:
                 print(e)
         try:
             self.salary_logic.update_current_simulation(index)
-        except IncorrectConfigFilePath as e:
+        except ConfigFileNotFoundError as e:
             print(e)
             return
         print("Simulation changed successfully!")

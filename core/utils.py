@@ -2,7 +2,7 @@ import pandas as pd
 import yaml
 from core.exceptions import CSVFileNotFoundError, ConfigFileNotFoundError
 from core.exceptions import EmptySalaryDataError, EmptyConfigDataError
-from core.exceptions import InvalidInputtedIndexError, IncorrectConfigFilePath
+from core.exceptions import InvalidInputIndexError
 
 class CheckInput:
     @staticmethod
@@ -12,9 +12,9 @@ class CheckInput:
         elif quit_option and value.lower() == "q":
             return False
         elif value.isdigit():
-            raise InvalidInputtedIndexError("invalid inputted index!")
+            raise InvalidInputIndexError("invalid inputted index!")
         else:
-            raise InvalidInputtedIndexError("inputted index must be in digit!")
+            raise InvalidInputIndexError("inputted index must be in digit!")
         
 class DataIO:
     def __init__(self, file_path: str):
@@ -44,7 +44,7 @@ class DataIO:
         
     def save_config(self, data):
         if self.file_path != "data/config.yaml":
-            raise IncorrectConfigFilePath("incorrect config file path provided to dump the new config!")
+            raise ConfigFileNotFoundError("incorrect config file path provided to dump the new config!")
         with open(self.file_path, "w") as file:
             yaml.safe_dump(data, file, sort_keys=False)
             
