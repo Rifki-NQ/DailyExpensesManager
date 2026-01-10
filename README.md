@@ -21,7 +21,7 @@ User can input their monthly salary and create simulation how they should spend 
 python main.py
 ```
 
-### Planned Feature
+## Planned Feature
 - Add new salary
 - Set expenses simulation config
 - Show expenses simulation
