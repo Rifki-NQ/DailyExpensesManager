@@ -22,6 +22,12 @@ class SalaryLogic:
         self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
         return df
     
+    def get_all_salary(self) -> pd.DataFrame:
+        all_salary = self.salary_handler.read_csv()
+        all_salary.index = all_salary.index + 1
+        return all_salary
+    
+    #logics for show current simulation
     def _load_simulation_index(self) -> int:
         config = self.config_handler.read_config()
         if config["current_simulation_index"] is None:
@@ -37,11 +43,7 @@ class SalaryLogic:
         current_salary_simulation[1] = int(current_salary_simulation[1])
         return current_salary_simulation
     
-    def get_all_salary(self) -> pd.DataFrame:
-        all_salary = self.salary_handler.read_csv()
-        all_salary.index = all_salary.index + 1
-        return all_salary
-    
+    #logics for change current simulation
     def check_inputted_index(self, index, min_value, max_value) -> bool:
         if CheckInput.check_digit(index, min_value, max_value):
             return True
@@ -51,6 +53,31 @@ class SalaryLogic:
         index -= 1
         updated_simulation = {"current_simulation_index": index}
         self.config_handler.save_config(updated_simulation)
+        
+    #logics for input new salary
+    def input_new_salary(self):
+        pass
+    
+    def _input_salary_date(self):
+        pass
+    
+    def _input_salary_values(self):
+        pass
+    
+    def check_input_date(self, date):
+        salary_data = self.get_all_salary()
+        salary_data_date = salary_data["date"].copy()
+        pass
+    
+    def _check_duplicate_date(self, date):
+        pass
+    
+    def _handle_duplicate_date_salary(self):
+        self._resolve_duplicate_date_salary()
+        pass
+    
+    def _resolve_duplicate_date_salary(self):
+        pass
 
 class SalaryCLI:
     def __init__(self):
@@ -84,3 +111,10 @@ class SalaryCLI:
             print(e)
             return
         print("Simulation changed successfully!")
+        
+    def add_new_salary(self):
+        try:
+            new_salary_date = input("Enter the date for your new salary: ")
+            self.salary_logic.check_input_date(new_salary_date)
+        except:
+            pass
