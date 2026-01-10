@@ -37,3 +37,7 @@ class ConfigFileNotFoundError(FileNotFoundAppError):
 class InvalidInputIndexError(AppError):
     """Raised when inputted value is not in the allowed range"""
     pass
+
+class IncorrectTimeFormatError(FileError            ):
+    """Raised when inputted format of datetime is not valid with what is in the data"""
+    pass

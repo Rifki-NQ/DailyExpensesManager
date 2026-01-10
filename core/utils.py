@@ -1,8 +1,7 @@
 import pandas as pd
 import yaml
-from core.exceptions import CSVFileNotFoundError, ConfigFileNotFoundError
-from core.exceptions import EmptySalaryDataError, EmptyConfigDataError
-from core.exceptions import InvalidInputIndexError
+from core.exceptions import (CSVFileNotFoundError, ConfigFileNotFoundError, IncorrectTimeFormatError,
+                             EmptySalaryDataError, EmptyConfigDataError, InvalidInputIndexError)
 
 class CheckInput:
     @staticmethod
@@ -30,6 +29,12 @@ class DataIO:
         except pd.errors.EmptyDataError:
             raise EmptySalaryDataError(f"failed to read ({self.file_path}) because the file is empty!")
          
+    def save_csv(self, df):
+        try:
+            df.to_csv(self.file_path, index=False)
+        except FileNotFoundError:
+            raise CSVFileNotFoundError("incorrect csv file path provided to dump sorted salary data!")
+         
     def read_config(self) -> dict[str, int] | dict[str: None]:
         try:
             with open(self.file_path, "r") as file:
@@ -51,14 +56,13 @@ class DataIO:
 class Sorter:
     def __init__(self, file_path: str):
         self.file_path = file_path
+        self.data_io = DataIO("data/salary_data.csv")
         
-    def sort_date(self, initial_format: str, after_format: str | None = None) -> pd.DataFrame | None:
-        df = DataIO.read_csv(self.file_path)
+    def sort_date(self, df: pd.DataFrame, initial_format: str, after_format: str | None = None) -> pd.DataFrame | None:
         try:
             df["date"] = pd.to_datetime(df["date"], format=initial_format)
         except ValueError as e:
-            print(f"date format error: {e}")
-            return None
+            raise IncorrectTimeFormatError("failed to format the date because the format is not valid!")
         df.sort_values("date", inplace=True)
         if after_format is None:
             return df

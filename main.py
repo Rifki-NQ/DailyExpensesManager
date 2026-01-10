@@ -1,5 +1,6 @@
 from core.salary import SalaryCLI
 from core.utils import CheckInput, DataIO
+from core.exceptions import AppError
 
 class MainMenu:
     def __init__(self, total_menu, total_sub_menu):
@@ -49,11 +50,14 @@ class MainMenu:
     
     def run(self):
         while self.is_running:
-            self.show_menu()
-            self.input_menu_choices()
-            self.show_sub_menu()
-            self.input_sub_menu_choices()
-            self.run_choosen_method()
+            try:
+                self.show_menu()
+                self.input_menu_choices()
+                self.show_sub_menu()
+                self.input_sub_menu_choices()
+                self.run_choosen_method()
+            except AppError as e:
+                print(e)
     
 if __name__ == "__main__":
     app = MainMenu(1, 2)

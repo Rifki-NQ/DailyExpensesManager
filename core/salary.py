@@ -11,6 +11,16 @@ class SalaryLogic:
         self.sorter = Sorter(self.salary_data_filepath)
         self.salary_handler = DataIO(self.salary_data_filepath)
         self.config_handler = DataIO(self.config_filepath)
+        self._initial_sort_salary_date()
+    
+    def _initial_sort_salary_date(self):
+        before_sort_df = self.salary_handler.read_csv()
+        after_sort_df = self.sorter.sort_date(before_sort_df, initial_format="%m-%Y", after_format="%m-%Y")
+        self.salary_handler.save_csv(after_sort_df)
+    
+    def sort_salary_date(self, df: pd.DataFrame) -> pd.DataFrame:
+        self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
+        return df
     
     def _load_simulation_index(self) -> int:
         config = self.config_handler.read_config()
