@@ -43,6 +43,7 @@ class SalaryCLI:
         
     def add_new_salary(self):
         #input new date then validate
+        self.add.reset()
         while True:
             try:
                 new_date = input("Input the date for your new salary: ")
@@ -56,7 +57,12 @@ class SalaryCLI:
                 print(e)
         #handle duplicated date of salary
         if self.handle_duplicated_date:
-            print("1. Overwrite old salary with new one\n2. Merge old salary with new one\n3. Cancel adding new salary")
+            print(
+                "Choose an action\n"
+                "1. Replace the existing salary with the new one\n"
+                "2. Add the new salary to the existing salary\n"
+                "3. Cancel the operation"
+                )
             while True:
                 try:
                     index = input("Decision (by index): ")

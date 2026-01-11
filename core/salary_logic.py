@@ -11,7 +11,6 @@ class SalaryBase:
         self.sorter = Sorter(self.salary_data_filepath)
         self.salary_handler = DataIO(self.salary_data_filepath)
         self.config_handler = DataIO(self.config_filepath)
-        self.exit_current_process = False
 
     def sort_salary_date(self, df: pd.DataFrame) -> pd.DataFrame:
         self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
@@ -52,7 +51,12 @@ class ChangeSalarySimulation(SalaryBase):
 class AddNewSalary(SalaryBase):
     def __init__(self):
         super().__init__()
-        self.duplicated_decision = int
+        self.duplicated_decision = 0
+        self.exit_current_process = False
+    
+    def reset(self):
+        self.duplicated_decision = 0
+        self.exit_current_process = False
     
     def check_input_date(self, date: str) -> str:
         salary_data = self.get_all_salary()
@@ -60,14 +64,14 @@ class AddNewSalary(SalaryBase):
             raise DuplicatedDateError("the inputted date is already exist in the data")
         try:
             date = pd.to_datetime(date, format="%m-%Y")
-            date = date.dt.strftime("%m-%Y")
+            date = date.strftime("%m-%Y")
             return date
         except ValueError:
             raise IncorrectTimeFormatError("incorrect format of inputted date! (must be MM-YYYY)")
         except pd.errors.OutOfBoundsDatetime:
             raise IncorrectTimeFormatError("Out of bound date (allowed year range is '1677' to '2261')")
     
-    def check_input_salary(self, salary: str):
+    def check_input_salary(self, salary: str) -> int:
         if not salary.isdigit():
             raise IncorrectInputSalary("salary must be in digit!")
         elif int(salary) < 0:
@@ -82,11 +86,16 @@ class AddNewSalary(SalaryBase):
         elif decision == 3:
             self.exit_current_process = True
     
-    def update_new_salary(self, new_date, new_salary):
+    def update_new_salary(self, new_date: str, new_salary: int):
         salary_data = self.get_all_salary()
-        new_data = [new_date, new_salary]
         if self.duplicated_decision == 1:
-            salary_data.loc[salary_data["date"] == new_date] = new_data
-            self.salary_handler.save_csv(salary_data)
+            salary_data.loc[salary_data["date"] == new_date] = [new_date, new_salary]
         elif self.duplicated_decision == 2:
-            pass
+            duplicated_salary = salary_data.loc[salary_data["date"] == new_date, "salary"].iloc[0]
+            new_salary = duplicated_salary +  new_salary
+            salary_data.loc[salary_data["date"] == new_date] = [new_date, new_salary]
+        else:
+            new_salary_df = pd.DataFrame({"date": new_date, "salary": new_salary}, index=[0])
+            salary_data = pd.concat([salary_data, new_salary_df], ignore_index=True)
+            salary_data = self.sort_salary_date(salary_data)
+        self.salary_handler.save_csv(salary_data)
