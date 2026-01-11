@@ -38,6 +38,16 @@ class InvalidInputIndexError(AppError):
     """Raised when inputted value is not in the allowed range"""
     pass
 
-class IncorrectTimeFormatError(FileError            ):
+class TimeError(FileError):
+    """Raised when there is any time related error when handling file"""
+
+class IncorrectTimeFormatError(TimeError):
     """Raised when inputted format of datetime is not valid with what is in the data"""
     pass
+
+class DuplicatedDateError(TimeError):
+    """Raised when inputted new date is already exist inside the data"""
+    pass
+
+class IncorrectInputSalary(FileError):
+    """Raised when inputted salary is not valid"""

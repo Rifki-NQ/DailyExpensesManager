@@ -1,6 +1,7 @@
 import pandas as pd
 from core.utils import DataIO, CheckInput, Sorter
-from core.exceptions import MissingSimulationIndexError
+from core.exceptions import (MissingSimulationIndexError, DuplicatedDateError,
+                             IncorrectTimeFormatError, IncorrectInputSalary)
 
 class SalaryBase:
     def __init__(self):
@@ -10,6 +11,7 @@ class SalaryBase:
         self.sorter = Sorter(self.salary_data_filepath)
         self.salary_handler = DataIO(self.salary_data_filepath)
         self.config_handler = DataIO(self.config_filepath)
+        self.exit_current_process = False
 
     def sort_salary_date(self, df: pd.DataFrame) -> pd.DataFrame:
         self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
@@ -19,6 +21,10 @@ class SalaryBase:
         all_salary = self.salary_handler.read_csv()
         all_salary.index = all_salary.index + 1
         return all_salary
+    
+    def check_inputted_index(self, index, min_value, max_value) -> bool:
+        if CheckInput.check_digit(index, min_value, max_value):
+            return True
 
 class CurrentSalarySimulation(SalaryBase):
     def _load_simulation_index(self) -> int:
@@ -37,10 +43,6 @@ class CurrentSalarySimulation(SalaryBase):
         return current_salary_simulation
     
 class ChangeSalarySimulation(SalaryBase):
-    def check_inputted_index(self, index, min_value, max_value) -> bool:
-        if CheckInput.check_digit(index, min_value, max_value):
-            return True
-    
     def update_current_simulation(self, index):
         index = int(index)
         index -= 1
@@ -48,26 +50,43 @@ class ChangeSalarySimulation(SalaryBase):
         self.config_handler.save_config(updated_simulation)
         
 class AddNewSalary(SalaryBase):
-    def input_new_salary(self):
-        pass
+    def __init__(self):
+        super().__init__()
+        self.duplicated_decision = int
     
-    def _input_salary_date(self):
-        pass
-    
-    def _input_salary_values(self):
-        pass
-    
-    def check_input_date(self, date):
+    def check_input_date(self, date: str) -> str:
         salary_data = self.get_all_salary()
-        salary_data_date = salary_data["date"].copy()
-        pass
+        if (salary_data["date"] == date).any():
+            raise DuplicatedDateError("the inputted date is already exist in the data")
+        try:
+            date = pd.to_datetime(date, format="%m-%Y")
+            date = date.dt.strftime("%m-%Y")
+            return date
+        except ValueError:
+            raise IncorrectTimeFormatError("incorrect format of inputted date! (must be MM-YYYY)")
+        except pd.errors.OutOfBoundsDatetime:
+            raise IncorrectTimeFormatError("Out of bound date (allowed year range is '1677' to '2261')")
     
-    def _check_duplicate_date(self, date):
-        pass
+    def check_input_salary(self, salary: str):
+        if not salary.isdigit():
+            raise IncorrectInputSalary("salary must be in digit!")
+        elif int(salary) < 0:
+            raise IncorrectInputSalary("salary cannot be lower than 0!")
+        return int(salary)
+            
+    def handle_duplicate_date_salary(self, decision: int):
+        if decision == 1:
+            self.duplicated_decision = 1
+        elif decision == 2:
+            self.duplicated_decision = 2
+        elif decision == 3:
+            self.exit_current_process = True
     
-    def _handle_duplicate_date_salary(self):
-        self._resolve_duplicate_date_salary()
-        pass
-    
-    def _resolve_duplicate_date_salary(self):
-        pass
+    def update_new_salary(self, new_date, new_salary):
+        salary_data = self.get_all_salary()
+        new_data = [new_date, new_salary]
+        if self.duplicated_decision == 1:
+            salary_data.loc[salary_data["date"] == new_date] = new_data
+            self.salary_handler.save_csv(salary_data)
+        elif self.duplicated_decision == 2:
+            pass
