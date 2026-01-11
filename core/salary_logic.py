@@ -1,9 +1,8 @@
 import pandas as pd
 from core.utils import DataIO, CheckInput, Sorter
-from core.exceptions import MissingSimulationIndexError, EmptyDataAppError, FileError
-from core.exceptions import InvalidInputIndexError, ConfigFileNotFoundError
+from core.exceptions import MissingSimulationIndexError
 
-class SalaryLogic:
+class SalaryBase:
     def __init__(self):
         self.simulation_index = 0
         self.salary_data_filepath = "data/salary_data.csv"
@@ -11,13 +10,7 @@ class SalaryLogic:
         self.sorter = Sorter(self.salary_data_filepath)
         self.salary_handler = DataIO(self.salary_data_filepath)
         self.config_handler = DataIO(self.config_filepath)
-        self._initial_sort_salary_date()
-    
-    def _initial_sort_salary_date(self):
-        before_sort_df = self.salary_handler.read_csv()
-        after_sort_df = self.sorter.sort_date(before_sort_df, initial_format="%m-%Y", after_format="%m-%Y")
-        self.salary_handler.save_csv(after_sort_df)
-    
+
     def sort_salary_date(self, df: pd.DataFrame) -> pd.DataFrame:
         self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
         return df
@@ -26,8 +19,8 @@ class SalaryLogic:
         all_salary = self.salary_handler.read_csv()
         all_salary.index = all_salary.index + 1
         return all_salary
-    
-    #logics for show current simulation
+
+class CurrentSalarySimulation(SalaryBase):
     def _load_simulation_index(self) -> int:
         config = self.config_handler.read_config()
         if config["current_simulation_index"] is None:
@@ -43,7 +36,7 @@ class SalaryLogic:
         current_salary_simulation[1] = int(current_salary_simulation[1])
         return current_salary_simulation
     
-    #logics for change current simulation
+class ChangeSalarySimulation(SalaryBase):
     def check_inputted_index(self, index, min_value, max_value) -> bool:
         if CheckInput.check_digit(index, min_value, max_value):
             return True
@@ -54,7 +47,7 @@ class SalaryLogic:
         updated_simulation = {"current_simulation_index": index}
         self.config_handler.save_config(updated_simulation)
         
-    #logics for input new salary
+class AddNewSalary(SalaryBase):
     def input_new_salary(self):
         pass
     
@@ -78,43 +71,3 @@ class SalaryLogic:
     
     def _resolve_duplicate_date_salary(self):
         pass
-
-class SalaryCLI:
-    def __init__(self):
-        self.salary_logic = SalaryLogic()
-    
-    def show_current_simulation(self):
-        try:
-            current_simulation = self.salary_logic.load_salary_simulation()
-            print(current_simulation)
-        except FileError as e:
-            print(e)
-            return
-            
-    def change_current_simulation(self):
-        try:
-            all_salary = self.salary_logic.get_all_salary()
-            print(all_salary)
-        except EmptyDataAppError as e:
-            print(e)
-            return
-        while True:
-            try:
-                index = input("Select which simulation to load (by index): ")
-                if self.salary_logic.check_inputted_index(index, 1, len(all_salary)):
-                    break
-            except InvalidInputIndexError as e:
-                print(e)
-        try:
-            self.salary_logic.update_current_simulation(index)
-        except ConfigFileNotFoundError as e:
-            print(e)
-            return
-        print("Simulation changed successfully!")
-        
-    def add_new_salary(self):
-        try:
-            new_salary_date = input("Enter the date for your new salary: ")
-            self.salary_logic.check_input_date(new_salary_date)
-        except:
-            pass
