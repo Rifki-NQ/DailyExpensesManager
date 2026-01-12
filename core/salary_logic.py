@@ -6,11 +6,11 @@ from core.exceptions import (MissingSimulationIndexError, DuplicatedDateError,
 class SalaryBase:
     def __init__(self):
         self.simulation_index = 0
-        self.salary_data_filepath = "data/salary_data.csv"
-        self.config_filepath = "data/config.yaml"
-        self.sorter = Sorter(self.salary_data_filepath)
-        self.salary_handler = DataIO(self.salary_data_filepath)
-        self.config_handler = DataIO(self.config_filepath)
+        self.SALARY_DATA_FILEPATH = "data/salary_data.csv"
+        self.CONFIG_FILEPATH = "data/config.yaml"
+        self.sorter = Sorter(self.SALARY_DATA_FILEPATH)
+        self.salary_handler = DataIO(self.SALARY_DATA_FILEPATH)
+        self.config_handler = DataIO(self.CONFIG_FILEPATH)
 
     def sort_salary_date(self, df: pd.DataFrame) -> pd.DataFrame:
         self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
@@ -66,10 +66,10 @@ class AddNewSalary(SalaryBase):
             date = pd.to_datetime(date, format="%m-%Y")
             date = date.strftime("%m-%Y")
             return date
-        except ValueError:
-            raise IncorrectTimeFormatError("incorrect format of inputted date! (must be MM-YYYY)")
         except pd.errors.OutOfBoundsDatetime:
             raise IncorrectTimeFormatError("Out of bound date (allowed year range is '1677' to '2261')")
+        except ValueError:
+            raise IncorrectTimeFormatError("incorrect format of inputted date! (must be MM-YYYY)")
     
     def check_input_salary(self, salary: str) -> int:
         if not salary.isdigit():

@@ -1,0 +1,13 @@
+necessary:
+  meal: 800000
+  electricity: 200000
+  parents: 400000
+  fuel: 300000
+  installment: 2350000
+  internet: 200000
+savings:
+  reksa_dana: 700000
+  gold: 300000
+free_to_spend:
+  subscription: 200000
+  left: 0
