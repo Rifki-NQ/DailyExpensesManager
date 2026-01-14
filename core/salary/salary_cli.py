@@ -1,4 +1,4 @@
-from core.salary_logic import (SalaryBase, CurrentSalarySimulation, ChangeSalarySimulation,
+from core.salary.salary_logic import (SalaryBase, CurrentSalarySimulation, ChangeSalarySimulation,
                                AddNewSalary)
 from core.exceptions import (FileError, EmptyDataAppError, DuplicatedDateError,
                              InvalidInputIndexError, ConfigFileNotFoundError,

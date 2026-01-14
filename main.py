@@ -1,5 +1,5 @@
-from core.salary_cli import SalaryCLI
-from core.expenses_cli import ExpensesCLI
+from core.salary.salary_cli import SalaryCLI
+from core.expenses.expenses_cli import ExpensesCLI
 from core.utils import CheckInput
 from core.exceptions import AppError, InvalidInputIndexError
 

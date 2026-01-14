@@ -1,4 +1,4 @@
-from core.expenses_logic import (SetExpenses)
+from core.expenses.expenses_logic import (SetExpenses)
 from core.exceptions import (IncorrectInputExpenses, ConfigFileNotFoundError)
 
 class ExpensesCLI:
