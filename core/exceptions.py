@@ -52,3 +52,7 @@ class DuplicatedDateError(TimeError):
 class IncorrectInputSalary(FileError):
     """Raised when inputted salary is not valid"""
     pass
+
+class IncorrectInputExpenses(FileError):
+    """Raised when inputted value of expense is not valid"""
+    pass
