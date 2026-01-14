@@ -12,10 +12,9 @@ User can input their monthly salary and create simulation how they should spend 
 - Libraries listed in 'requirements.txt'
 
 ## Installation
-1. Clone the repository: `git clone github.com`
-2. Navigate into the project directory: `cd repository-name`
-3. Install dependencies using a package manager like npm: `npm install`
-4. Follow any additional setup steps specific to the project.
+1. Clone the repository: `git clone https://github.com/Rifki-NQ/DailyExpensesManager`
+2. Navigate into the project directory: `cd DailyExpensesManager`
+3. Install dependencies: `pip install -r requirements.txt`
 
 ## Usage
 ```bash
@@ -23,5 +22,7 @@ python main.py
 ```
 
 ## Planned Feature
-- Set expenses simulation config
-- Show expenses simulation
+- Show monthly expenses
+- Set monthly expenses
+- Edit monthly expenses
+- Show daily expenses simulation
