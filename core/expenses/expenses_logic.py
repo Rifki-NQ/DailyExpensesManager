@@ -3,7 +3,7 @@ from core.exceptions import IncorrectInputExpenses
 
 class ExpensesLogic:
     def __init__(self):
-        self.MONTHLY_EXPENSES_FILEPATH = "data/expenses_config.yaml"
+        self.MONTHLY_EXPENSES_FILEPATH = "data/monthly_expenses.yaml"
         self.yaml_handler = DataIO(self.MONTHLY_EXPENSES_FILEPATH)
         self.monthly_expenses = {"necessary":{
                             "meal": 0,
@@ -19,16 +19,38 @@ class ExpensesLogic:
                             },
                             "free_to_spend":{
                             "subscription": 0,
-                            "left": 0
                             }}
         
-    def check_inputted_values(self, value: str) -> bool:
+    def check_input_values(self, value: str) -> bool:
         if value.isdigit():
             return True
         raise IncorrectInputExpenses("inputted expense must be digit!")
             
 class SetExpenses(ExpensesLogic):
+    def __init__(self):
+        super().__init__()
+        self.input_progress = 0
+        self.input_header_progress = 0
+    
+    def reset_input_progress(self):
+        self.input_progress = 0
+        self.input_header_progress = 0
+    
+    def update_input_progress(self):
+        self.input_progress += 1
+        self.input_header_progress += 1 if self.input_progress in (0, 6, 8) else 0
+        
+    def update_not_complete(self) -> bool:
+        if self.input_progress != 9:
+            return True
+        return False
+    
+    def current_header_progress(self) -> bool:
+        if self.input_header_progress in (0, 6, 8):
+            return True
+        return False
+    
     def update_expenses(self, header: str, key: str, value: int):
-        for i in range(10):
-            self.monthly_expenses[header][key] = value
-        self.yaml_handler.save_config(self.monthly_expenses)
+        self.monthly_expenses[header][key] = value
+        if self.input_progress == 8:
+            self.yaml_handler.save_config(self.monthly_expenses)

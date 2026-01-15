@@ -9,16 +9,16 @@ class ExpensesCLI:
                                       "internet", "reksa_dana", "gold", "subscription"]
     
     def set_monthly_expenses(self):
-        input_progress = 0
-        input_header_progress = 0
-        while input_progress != 9:
-            if input_progress in (0, 6, 8):
-                    print(f"-----{self.monthly_expenses_headers[input_header_progress].upper()}-----")
+        self.set_expenses.reset_input_progress()
+        while self.set_expenses.update_not_complete():
+            if self.set_expenses.current_header_progress():
+                    print(f"-----{self.monthly_expenses_headers[self.set_expenses.input_header_progress].upper()}-----")
             try:
-                new_expense = input(f"Set expense for {self.monthly_expenses_keys[input_progress]}: ")
-                if self.set_expenses.check_inputted_values(new_expense):
-                    input_progress += 1
-                    input_header_progress += 1 if input_progress in (0, 6, 8) else 0
+                new_expense = input(f"Set expense for {self.monthly_expenses_keys[self.set_expenses.input_progress]}: ")
+                if self.set_expenses.check_input_values(new_expense):
+                    self.set_expenses.update_expenses(self.monthly_expenses_headers[self.set_expenses.input_header_progress],
+                                                      self.monthly_expenses_keys[self.set_expenses.input_progress], int(new_expense))
+                    self.set_expenses.update_input_progress()
             except IncorrectInputExpenses as e:
                 print(e)
             except ConfigFileNotFoundError as e:
