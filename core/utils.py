@@ -48,10 +48,11 @@ class DataIO:
             raise ConfigFileNotFoundError(f"failed to read ({self.file_path}) because the file does not exist!")
         
     def save_config(self, data):
-        if self.file_path != "data/config.yaml":
-            raise ConfigFileNotFoundError("incorrect config file path provided to dump the new config!")
-        with open(self.file_path, "w") as file:
-            yaml.safe_dump(data, file, sort_keys=False)
+        try:
+            with open(self.file_path, "w+") as file:
+                yaml.safe_dump(data, file, sort_keys=False)
+        except FileNotFoundError:
+            raise ConfigFileNotFoundError("failed to dump the data because the file does not exist!")
             
 class Sorter:
     def __init__(self, file_path: str):
