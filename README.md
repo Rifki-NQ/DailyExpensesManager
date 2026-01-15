@@ -3,9 +3,13 @@ A python script to help user manage their expenses based on their monthly salary
 User can input their monthly salary and create simulation how they should spend it
 
 ## Features
-- Show current salary simulation
-- Change current salary simulation
-- Add new salary
+- Salary DATA
+1. Show current salary simulation
+2. Change current salary simulation
+3. Add new salary
+
+- Expenses DATA
+1. Set monthly expenses
 
 ## Requirements
 - Python 3.10+
@@ -23,6 +27,5 @@ python main.py
 
 ## Planned Feature
 - Show monthly expenses
-- Set monthly expenses
 - Edit monthly expenses
 - Show daily expenses simulation
