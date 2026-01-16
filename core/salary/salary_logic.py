@@ -69,7 +69,7 @@ class AddNewSalary(SalaryBase):
         except pd.errors.OutOfBoundsDatetime:
             raise IncorrectTimeFormatError("Out of bound date (allowed year range is '1677' to '2261')")
         except ValueError:
-            raise IncorrectTimeFormatError("incorrect format of inputted date! (must be MM-YYYY)")
+            raise IncorrectTimeFormatError("incorrect/invalid format of inputted date! (must be MM-YYYY)")
     
     def check_input_salary(self, salary: str) -> int:
         if not salary.isdigit():
