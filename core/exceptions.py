@@ -30,8 +30,12 @@ class CSVFileNotFoundError(FileNotFoundAppError):
     """Raised when CSV file is not found"""
     pass
 
-class ConfigFileNotFoundError(FileNotFoundAppError):
+class YAMLFileNotFoundError(FileNotFoundAppError):
     """Raised when Config file is not found"""
+    pass
+
+class InvalidFileTypeError(FileNotFoundAppError):
+    """Raised when an invalid file type is provided (not CSV or YAML)"""
     pass
 
 class InvalidInputIndexError(AppError):

@@ -1,9 +1,9 @@
 from core.salary.salary_logic import (SalaryBase, CurrentSalarySimulation, ChangeSalarySimulation,
                                AddNewSalary)
 from core.exceptions import (FileError, EmptyDataAppError, DuplicatedDateError,
-                             InvalidInputIndexError, ConfigFileNotFoundError,
+                             InvalidInputIndexError, YAMLFileNotFoundError,
                              IncorrectTimeFormatError, IncorrectInputSalary,
-                             CSVFileNotFoundError)
+                             CSVFileNotFoundError, InvalidFileTypeError)
 
 class SalaryCLI:
     def __init__(self):
@@ -38,7 +38,7 @@ class SalaryCLI:
         try:
             self.change.update_current_simulation(index)
             print("Simulation changed successfully!")
-        except ConfigFileNotFoundError as e:
+        except YAMLFileNotFoundError as e:
             print(e)
         
     def add_new_salary(self):

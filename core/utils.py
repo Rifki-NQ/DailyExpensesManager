@@ -1,7 +1,9 @@
 import pandas as pd
 import yaml
-from core.exceptions import (CSVFileNotFoundError, ConfigFileNotFoundError, IncorrectTimeFormatError,
-                             EmptySalaryDataError, EmptyConfigDataError, InvalidInputIndexError)
+from pathlib import Path
+from core.exceptions import (CSVFileNotFoundError, YAMLFileNotFoundError, IncorrectTimeFormatError,
+                             EmptySalaryDataError, EmptyConfigDataError, InvalidInputIndexError,
+                             InvalidFileTypeError)
 
 class CheckInput:
     @staticmethod
@@ -16,48 +18,58 @@ class CheckInput:
             raise InvalidInputIndexError("inputted index must be in digit!")
         
 class DataIO:
-    def __init__(self, file_path: str):
+    @staticmethod
+    def create_dataio(file_path: str | Path, file_type: str) -> DataIO | DataIO:
+        path = Path(file_path)
+        if not path.exists() and file_type.lower() == "csv":
+            raise CSVFileNotFoundError(f"failed to read/write ({path}) because the file does not exist!")
+        elif not path.exists() and file_type.lower() == "yaml":
+            raise YAMLFileNotFoundError(f"failed to read/write ({path}) because the file does not exist!")
+        if file_type.lower() == "csv":
+            return CSVFileHandler(file_path)
+        elif file_type.lower() == "yaml":
+            return YAMLFileHandler(file_path)
+        else:
+            raise InvalidFileTypeError("invalid file type provided!")
+    
+class CSVFileHandler(DataIO):
+    def __init__(self, file_path: str | Path):
         self.file_path = file_path
     
-    def read_csv(self) -> pd.DataFrame:
+    def read(self) -> pd.DataFrame:
         try:
             pd.set_option("display.max_rows", None)
             df = pd.read_csv(self.file_path)
             return df
-        except FileNotFoundError:
-            raise CSVFileNotFoundError(f"failed to read ({self.file_path}) because the file does not exist!")
         except pd.errors.EmptyDataError:
             raise EmptySalaryDataError(f"failed to read ({self.file_path}) because the file is empty!")
          
-    def save_csv(self, df):
+    def save(self, df):
         try:
             df.to_csv(self.file_path, index=False)
         except FileNotFoundError:
             raise CSVFileNotFoundError("incorrect csv file path provided to dump sorted salary data!")
          
-    def read_config(self) -> dict[str, int] | dict[str: None]:
-        try:
-            with open(self.file_path, "r") as file:
-                config_data = yaml.safe_load(file)
-            if isinstance(config_data, str):
-                raise EmptyConfigDataError(f"failed to read ({self.file_path}) because it contains invalid config data!")
-            elif config_data is None:
-                raise EmptyConfigDataError(f"failed to read ({self.file_path}) because the file is empty!")
-            return config_data
-        except FileNotFoundError:
-            raise ConfigFileNotFoundError(f"failed to read ({self.file_path}) because the file does not exist!")
+class YAMLFileHandler(DataIO):
+    def __init__(self, file_path: str | Path):
+        self.file_path = file_path
+    
+    def read(self) -> dict[str, int] | dict[str: None]:
+        with open(self.file_path, "r") as file:
+            config_data = yaml.safe_load(file)
+        if isinstance(config_data, str):
+            raise EmptyConfigDataError(f"failed to read ({self.file_path}) because it contains invalid config data!")
+        elif config_data is None:
+            raise EmptyConfigDataError(f"failed to read ({self.file_path}) because the file is empty!")
+        return config_data
         
-    def save_config(self, data):
-        try:
-            with open(self.file_path, "w+") as file:
-                yaml.safe_dump(data, file, sort_keys=False)
-        except FileNotFoundError:
-            raise ConfigFileNotFoundError("failed to dump the data because the file does not exist!")
+    def save(self, data):
+        with open(self.file_path, "w+") as file:
+            yaml.safe_dump(data, file, sort_keys=False)
             
 class Sorter:
     def __init__(self, file_path: str):
         self.file_path = file_path
-        self.data_io = DataIO("data/salary_data.csv")
         
     def sort_date(self, df: pd.DataFrame, initial_format: str, after_format: str | None = None) -> pd.DataFrame | None:
         try:

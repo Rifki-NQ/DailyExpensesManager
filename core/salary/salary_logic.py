@@ -9,15 +9,15 @@ class SalaryBase:
         self.SALARY_DATA_FILEPATH = "data/salary_data.csv"
         self.CONFIG_FILEPATH = "data/config.yaml"
         self.sorter = Sorter(self.SALARY_DATA_FILEPATH)
-        self.salary_handler = DataIO(self.SALARY_DATA_FILEPATH)
-        self.config_handler = DataIO(self.CONFIG_FILEPATH)
+        self.salary_handler = DataIO.create_dataio(self.SALARY_DATA_FILEPATH, "csv")
+        self.config_handler = DataIO.create_dataio(self.CONFIG_FILEPATH, "yaml")
 
     def sort_salary_date(self, df: pd.DataFrame) -> pd.DataFrame:
         self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
         return df
     
     def get_all_salary(self) -> pd.DataFrame:
-        all_salary = self.salary_handler.read_csv()
+        all_salary = self.salary_handler.read()
         all_salary.index = all_salary.index + 1
         return all_salary
     
@@ -27,14 +27,14 @@ class SalaryBase:
 
 class CurrentSalarySimulation(SalaryBase):
     def _load_simulation_index(self) -> int:
-        config = self.config_handler.read_config()
+        config = self.config_handler.read()
         if config["current_simulation_index"] is None:
             raise MissingSimulationIndexError("empty simulation index from the config!")
         return config["current_simulation_index"]
             
     def load_salary_simulation(self) -> list[str | int]:
         self.simulation_index = self._load_simulation_index()
-        df_salary = self.salary_handler.read_csv()
+        df_salary = self.salary_handler.read()
         df_salary = df_salary.iloc[self.simulation_index].tolist()
         current_salary_simulation = df_salary
         #convert np.int64 to int
@@ -46,7 +46,7 @@ class ChangeSalarySimulation(SalaryBase):
         index = int(index)
         index -= 1
         updated_simulation = {"current_simulation_index": index}
-        self.config_handler.save_config(updated_simulation)
+        self.config_handler.save(updated_simulation)
         
 class AddNewSalary(SalaryBase):
     def __init__(self):
@@ -98,4 +98,4 @@ class AddNewSalary(SalaryBase):
             new_salary_df = pd.DataFrame({"date": new_date, "salary": new_salary}, index=[0])
             salary_data = pd.concat([salary_data, new_salary_df], ignore_index=True)
             salary_data = self.sort_salary_date(salary_data)
-        self.salary_handler.save_csv(salary_data)
+        self.salary_handler.save(salary_data)
