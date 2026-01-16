@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 from core.utils import DataIO, CheckInput, Sorter
 from core.exceptions import (MissingSimulationIndexError, DuplicatedDateError,
                              IncorrectTimeFormatError, IncorrectInputSalary)
@@ -6,14 +7,20 @@ from core.exceptions import (MissingSimulationIndexError, DuplicatedDateError,
 class SalaryBase:
     def __init__(self):
         self.simulation_index = 0
-        self.SALARY_DATA_FILEPATH = "data/salary_data.csv"
-        self.CONFIG_FILEPATH = "data/config.yaml"
+        self.SALARY_DATA_FILEPATH = Path("data/salary_data.csv")
+        self.CONFIG_FILEPATH = Path("data/config.yaml")
         self.sorter = Sorter(self.SALARY_DATA_FILEPATH)
-        self.salary_handler = DataIO.create_dataio(self.SALARY_DATA_FILEPATH, "csv")
-        self.config_handler = DataIO.create_dataio(self.CONFIG_FILEPATH, "yaml")
+        self.salary_handler = DataIO.create_dataio(self.SALARY_DATA_FILEPATH)
+        self.config_handler = DataIO.create_dataio(self.CONFIG_FILEPATH)
 
     def sort_salary_date(self, df: pd.DataFrame) -> pd.DataFrame:
-        self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
+            def __init__(self):
+        self.simulation_index = 0
+        self.SALARY_DATA_FILEPATH = Path("data/salary_data.csv")
+        self.CONFIG_FILEPATH = Path("data/config.yaml")
+        self.sorter = Sorter(self.SALARY_DATA_FILEPATH)
+        self.salary_handler = DataIO.create_dataio(self.SALARY_DATA_FILEPATH)
+        self.config_handler = DataIO.create_dataio(self.CONFIG_FILEPATH)self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
         return df
     
     def get_all_salary(self) -> pd.DataFrame:

@@ -1,6 +1,7 @@
 import pandas as pd
 import yaml
 from pathlib import Path
+from abc import ABC, abstractmethod
 from core.exceptions import (CSVFileNotFoundError, YAMLFileNotFoundError, IncorrectTimeFormatError,
                              EmptySalaryDataError, EmptyConfigDataError, InvalidInputIndexError,
                              InvalidFileTypeError)
@@ -17,20 +18,29 @@ class CheckInput:
         else:
             raise InvalidInputIndexError("inputted index must be in digit!")
         
-class DataIO:
+class DataIO(ABC):
+    @abstractmethod
+    def read(self):
+        pass
+    
+    @abstractmethod
+    def save(self, data):
+        pass
+    
     @staticmethod
-    def create_dataio(file_path: str | Path, file_type: str) -> DataIO | DataIO:
-        path = Path(file_path)
-        if not path.exists() and file_type.lower() == "csv":
-            raise CSVFileNotFoundError(f"failed to read/write ({path}) because the file does not exist!")
-        elif not path.exists() and file_type.lower() == "yaml":
-            raise YAMLFileNotFoundError(f"failed to read/write ({path}) because the file does not exist!")
-        if file_type.lower() == "csv":
-            return CSVFileHandler(file_path)
-        elif file_type.lower() == "yaml":
-            return YAMLFileHandler(file_path)
-        else:
+    def create_dataio(file_path: Path) -> DataIO:
+        valid_file_types = {"csv", "yaml"}
+        file_type = file_path.suffix.lstrip(".")
+        if not file_type in valid_file_types:
             raise InvalidFileTypeError("invalid file type provided!")
+        if not file_path.exists() and file_type == "csv":
+            raise CSVFileNotFoundError(f"failed to read/write ({file_path}) because the file does not exist!")
+        elif not file_path.exists() and file_type == "yaml":
+            raise YAMLFileNotFoundError(f"failed to read/write ({file_path}) because the file does not exist!")
+        if file_type == "csv":
+            return CSVFileHandler(file_path)
+        elif file_type == "yaml":
+            return YAMLFileHandler(file_path)
     
 class CSVFileHandler(DataIO):
     def __init__(self, file_path: str | Path):
@@ -45,10 +55,7 @@ class CSVFileHandler(DataIO):
             raise EmptySalaryDataError(f"failed to read ({self.file_path}) because the file is empty!")
          
     def save(self, df):
-        try:
-            df.to_csv(self.file_path, index=False)
-        except FileNotFoundError:
-            raise CSVFileNotFoundError("incorrect csv file path provided to dump sorted salary data!")
+        df.to_csv(self.file_path, index=False)
          
 class YAMLFileHandler(DataIO):
     def __init__(self, file_path: str | Path):
