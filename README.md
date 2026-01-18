@@ -4,11 +4,12 @@ User can input their monthly salary and create simulation how they should spend 
 
 ## Features
 1. Salary DATA
-    1. Show current salary simulation
-    2. Change current salary simulation
-    3. Add new salary
+    - Show current salary simulation
+    - Change current salary simulation
+    - Add new salary
+
 2. Expenses DATA
-    1. Set monthly expenses
+    - Set monthly expenses
 
 ## Requirements
 - Python 3.10+
@@ -25,6 +26,8 @@ python main.py
 ```
 
 ## Planned Feature
+- Edit Salary
+- Delete Salary
 - Show monthly expenses
 - Edit monthly expenses
 - Show daily expenses simulation
