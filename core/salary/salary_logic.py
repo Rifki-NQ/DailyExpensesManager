@@ -9,20 +9,9 @@ class SalaryBase:
         self.simulation_index = 0
         self.SALARY_DATA_FILEPATH = Path("data/salary_data.csv")
         self.CONFIG_FILEPATH = Path("data/config.yaml")
-        self.sorter = Sorter(self.SALARY_DATA_FILEPATH)
         self.salary_handler = DataIO.create_dataio(self.SALARY_DATA_FILEPATH)
         self.config_handler = DataIO.create_dataio(self.CONFIG_FILEPATH)
 
-    def sort_salary_date(self, df: pd.DataFrame) -> pd.DataFrame:
-            def __init__(self):
-        self.simulation_index = 0
-        self.SALARY_DATA_FILEPATH = Path("data/salary_data.csv")
-        self.CONFIG_FILEPATH = Path("data/config.yaml")
-        self.sorter = Sorter(self.SALARY_DATA_FILEPATH)
-        self.salary_handler = DataIO.create_dataio(self.SALARY_DATA_FILEPATH)
-        self.config_handler = DataIO.create_dataio(self.CONFIG_FILEPATH)self.sorter.sort_date(df, initial_format="%m-%Y", after_format="%m-%Y")
-        return df
-    
     def get_all_salary(self) -> pd.DataFrame:
         all_salary = self.salary_handler.read()
         all_salary.index = all_salary.index + 1
@@ -104,5 +93,5 @@ class AddNewSalary(SalaryBase):
         else:
             new_salary_df = pd.DataFrame({"date": new_date, "salary": new_salary}, index=[0])
             salary_data = pd.concat([salary_data, new_salary_df], ignore_index=True)
-            salary_data = self.sort_salary_date(salary_data)
+            salary_data = Sorter.sort_date(salary_data, "%m-%Y", "%m-%Y")
         self.salary_handler.save(salary_data)

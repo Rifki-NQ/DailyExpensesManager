@@ -75,16 +75,13 @@ class YAMLFileHandler(DataIO):
             yaml.safe_dump(data, file, sort_keys=False)
             
 class Sorter:
-    def __init__(self, file_path: str):
-        self.file_path = file_path
-        
-    def sort_date(self, df: pd.DataFrame, initial_format: str, after_format: str | None = None) -> pd.DataFrame | None:
+    @staticmethod
+    def sort_date(df: pd.DataFrame, initial_format: str, after_format: str | None = None) -> pd.DataFrame:
         try:
             df["date"] = pd.to_datetime(df["date"], format=initial_format)
-        except ValueError as e:
-            raise IncorrectTimeFormatError("failed to format the date because the format is not valid!")
+        except ValueError:
+            raise IncorrectTimeFormatError("failed to format the date because the initial format is invalid!")
         df.sort_values("date", inplace=True)
-        if after_format is None:
-            return df
-        df["date"] = df["date"].dt.strftime(after_format)
+        if after_format is not None:
+            df["date"] = df["date"].dt.strftime(after_format)
         return df
