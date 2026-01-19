@@ -31,7 +31,7 @@ class SalaryCLI:
         while True:
             try:
                 index = input("Select which simulation to load (by index): ")
-                if self.salary_utils.check_inputted_index(index, 1, len(all_salary)):
+                if self.salary_utils.check_input_index(index, 1, len(all_salary)):
                     break
             except InvalidInputIndexError as e:
                 print(e)
@@ -66,7 +66,7 @@ class SalaryCLI:
             while True:
                 try:
                     index = input("Decision (by index): ")
-                    if self.salary_utils.check_inputted_index(index, 1, 3):
+                    if self.salary_utils.check_input_index(index, 1, 3):
                         index = int(index)
                         break
                 except InvalidInputIndexError as e:

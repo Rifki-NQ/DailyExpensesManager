@@ -6,7 +6,7 @@ from core.exceptions import (MissingSimulationIndexError, DuplicatedDateError,
 
 class SalaryBase:
     def __init__(self):
-        self.simulation_index = 0
+        self.simulation_date = ""
         self.SALARY_DATA_FILEPATH = Path("data/salary_data.csv")
         self.CONFIG_FILEPATH = Path("data/config.yaml")
         self.salary_handler = DataIO.create_dataio(self.SALARY_DATA_FILEPATH)
@@ -17,21 +17,21 @@ class SalaryBase:
         all_salary.index = all_salary.index + 1
         return all_salary
     
-    def check_inputted_index(self, index, min_value, max_value) -> bool:
+    def check_input_index(self, index, min_value, max_value) -> bool:
         if CheckInput.check_digit(index, min_value, max_value):
             return True
 
 class CurrentSalarySimulation(SalaryBase):
-    def _load_simulation_index(self) -> int:
+    def _load_simulation_date(self) -> int:
         config = self.config_handler.read()
-        if config["current_simulation_index"] is None:
-            raise MissingSimulationIndexError("empty simulation index from the config!")
-        return config["current_simulation_index"]
+        if config["current_simulation_date"] is None:
+            raise MissingSimulationIndexError("empty simulation date from the config!")
+        return config["current_simulation_date"]
             
     def load_salary_simulation(self) -> list[str | int]:
-        self.simulation_index = self._load_simulation_index()
+        self.simulation_date = self._load_simulation_date()
         df_salary = self.salary_handler.read()
-        df_salary = df_salary.iloc[self.simulation_index].tolist()
+        df_salary = df_salary.loc[df_salary["date"] == self.simulation_date].iloc[0].tolist()
         current_salary_simulation = df_salary
         #convert np.int64 to int
         current_salary_simulation[1] = int(current_salary_simulation[1])
@@ -39,9 +39,10 @@ class CurrentSalarySimulation(SalaryBase):
     
 class ChangeSalarySimulation(SalaryBase):
     def update_current_simulation(self, index):
+        salary_df = self.get_all_salary()
         index = int(index)
         index -= 1
-        updated_simulation = {"current_simulation_index": index}
+        updated_simulation = {"current_simulation_date": salary_df.iloc[index, 0]}
         self.config_handler.save(updated_simulation)
         
 class AddNewSalary(SalaryBase):

@@ -61,7 +61,7 @@ class YAMLFileHandler(DataIO):
     def __init__(self, file_path: str | Path):
         self.file_path = file_path
     
-    def read(self) -> dict[str, int] | dict[str: None]:
+    def read(self) -> dict[str, str] | dict[str: None]:
         with open(self.file_path, "r") as file:
             config_data = yaml.safe_load(file)
         if isinstance(config_data, str):
