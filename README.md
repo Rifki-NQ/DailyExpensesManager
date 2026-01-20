@@ -7,6 +7,7 @@ User can input their monthly salary and create simulation how they should spend 
     - Show current salary simulation
     - Change current salary simulation
     - Add new salary
+    - Edit salary
 
 2. Expenses DATA
     - Set monthly expenses
@@ -26,8 +27,7 @@ python main.py
 ```
 
 ## Planned Feature
-- Edit Salary
-- Delete Salary
+- Delete salary
 - Show monthly expenses
 - Edit monthly expenses
 - Show daily expenses simulation
