@@ -20,6 +20,13 @@ class SalaryBase:
     def check_input_index(self, index, min_value, max_value) -> bool:
         if CheckInput.check_digit(index, min_value, max_value):
             return True
+        
+    def check_input_salary(self, salary: str) -> int:
+        if not salary.isdigit():
+            raise IncorrectInputSalary("salary must be in digit!")
+        elif int(salary) < 0:
+            raise IncorrectInputSalary("salary cannot be lower than 0!")
+        return int(salary)
 
 class CurrentSalarySimulation(SalaryBase):
     def _load_simulation_date(self) -> int:
@@ -67,13 +74,6 @@ class AddNewSalary(SalaryBase):
             raise IncorrectTimeFormatError("Out of bound date (allowed year range is '1677' to '2261')")
         except ValueError:
             raise IncorrectTimeFormatError("incorrect/invalid format of inputted date! (must be MM-YYYY)")
-    
-    def check_input_salary(self, salary: str) -> int:
-        if not salary.isdigit():
-            raise IncorrectInputSalary("salary must be in digit!")
-        elif int(salary) < 0:
-            raise IncorrectInputSalary("salary cannot be lower than 0!")
-        return int(salary)
             
     def handle_duplicate_date_salary(self, decision: int):
         if decision == 1:
@@ -95,4 +95,10 @@ class AddNewSalary(SalaryBase):
             new_salary_df = pd.DataFrame({"date": new_date, "salary": new_salary}, index=[0])
             salary_data = pd.concat([salary_data, new_salary_df], ignore_index=True)
             salary_data = Sorter.sort_date(salary_data, "%m-%Y", "%m-%Y")
+        self.salary_handler.save(salary_data)
+        
+class EditSalary(SalaryBase):
+    def update_edit_salary(self, index: int, new_salary: int):
+        salary_data = self.get_all_salary()
+        salary_data.loc[index, "salary"] = new_salary
         self.salary_handler.save(salary_data)

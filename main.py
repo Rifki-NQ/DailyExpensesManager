@@ -26,6 +26,7 @@ class MainMenu:
             print("1. Show current salary simulation")
             print("2. Change current salary simulation")
             print("3. Add new salary")
+            print("4. Edit salary")
         elif self.choosen_menu == 2:
             print("1. Set monthly expenses")
     
@@ -72,6 +73,8 @@ class MainMenu:
                 self.salary_data.change_current_simulation()
             elif self.choosen_sub_menu == 3:
                 self.salary_data.add_new_salary()
+            elif self.choosen_sub_menu == 4:
+                self.salary_data.edit_salary()
         #Expenses menu
         if self.choosen_menu == 2:
             if self.choosen_sub_menu == 1:
@@ -89,5 +92,5 @@ class MainMenu:
                 print(e)
     
 if __name__ == "__main__":
-    app = MainMenu(2, 3, 1)
+    app = MainMenu(2, 4, 1)
     app.run()

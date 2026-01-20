@@ -1,5 +1,5 @@
 from core.salary.salary_logic import (SalaryBase, CurrentSalarySimulation, ChangeSalarySimulation,
-                               AddNewSalary)
+                               AddNewSalary, EditSalary)
 from core.exceptions import (FileError, EmptyDataAppError, DuplicatedDateError,
                              InvalidInputIndexError, YAMLFileNotFoundError,
                              IncorrectTimeFormatError, IncorrectInputSalary,
@@ -11,6 +11,7 @@ class SalaryCLI:
         self.show = CurrentSalarySimulation()
         self.change = ChangeSalarySimulation()
         self.add = AddNewSalary()
+        self.edit = EditSalary()
         self.handle_duplicated_date = False
     
     def show_current_simulation(self):
@@ -85,5 +86,32 @@ class SalaryCLI:
         try:
             self.add.update_new_salary(new_date, new_salary)
             print("New salary added successfully!")
+        except CSVFileNotFoundError as e:
+            print(e)
+            
+    def edit_salary(self):
+        try:
+            all_salary = self.salary_utils.get_all_salary()
+            print(all_salary)
+        except EmptyDataAppError as e:
+            print(e)
+            return
+        while True:
+            try:
+                index = input("Select which salary to edit (by index): ")
+                if self.salary_utils.check_input_index(index, 1, len(all_salary)):
+                    index = int(index)
+                    break
+            except InvalidInputIndexError as e:
+                print(e)
+        while True:
+            try:
+                new_salary = input("Input the new salary: ")
+                new_salary = self.edit.check_input_salary(new_salary)
+                break
+            except IncorrectInputSalary as e:
+                print(e)
+        try:
+            self.edit.update_edit_salary(index, new_salary)
         except CSVFileNotFoundError as e:
             print(e)
