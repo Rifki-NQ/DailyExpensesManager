@@ -102,3 +102,9 @@ class EditSalary(SalaryBase):
         salary_data = self.get_all_salary()
         salary_data.loc[index, "salary"] = new_salary
         self.salary_handler.save(salary_data)
+        
+class DeleteSalary(SalaryBase):
+    def update_delete_salary(self, index: int) -> None:
+        salary_data = self.get_all_salary()
+        salary_data = salary_data.drop(index=index)
+        self.salary_handler.save(salary_data)
