@@ -14,7 +14,17 @@ class SalaryCLI:
         self.edit = EditSalary()
         self.handle_duplicated_date = False
     
-    def show_current_simulation(self):
+    #helper to input and validate inputted index
+    def prompt_index(self, message: str, min_value: int, max_value: int) -> int:
+        while True:
+            try:
+                index = input(message)
+                if self.salary_utils.check_input_index(index, min_value, max_value):
+                    return int(index)
+            except InvalidInputIndexError as e:
+                print(e)
+    
+    def show_current_simulation(self) -> None:
         try:
             current_simulation = self.show.load_salary_simulation()
             print(current_simulation)
@@ -22,27 +32,21 @@ class SalaryCLI:
             print(e)
             return
             
-    def change_current_simulation(self):
+    def change_current_simulation(self) -> None:
         try:
-            all_salary = self.salary_utils.get_all_salary()
+            all_salary = self.change.get_all_salary()
             print(all_salary)
         except EmptyDataAppError as e:
             print(e)
             return
-        while True:
-            try:
-                index = input("Select which simulation to load (by index): ")
-                if self.salary_utils.check_input_index(index, 1, len(all_salary)):
-                    break
-            except InvalidInputIndexError as e:
-                print(e)
+        index = self.prompt_index("Select which simulation to load (by index): ", 1, len(all_salary))
         try:
             self.change.update_current_simulation(index)
             print("Simulation changed successfully!")
         except YAMLFileNotFoundError as e:
             print(e)
         
-    def add_new_salary(self):
+    def add_new_salary(self) -> None:
         #input new date then validate
         self.add.reset()
         while True:
@@ -64,14 +68,7 @@ class SalaryCLI:
                 "2. Add the new salary to the existing salary\n"
                 "3. Cancel the operation"
                 )
-            while True:
-                try:
-                    index = input("Decision (by index): ")
-                    if self.salary_utils.check_input_index(index, 1, 3):
-                        index = int(index)
-                        break
-                except InvalidInputIndexError as e:
-                    print(e)
+            index = self.prompt_index("Decision (by index): ", 1, 3)
             self.add.handle_duplicate_date_salary(index)
             if self.add.exit_current_process:
                 return
@@ -89,21 +86,14 @@ class SalaryCLI:
         except CSVFileNotFoundError as e:
             print(e)
             
-    def edit_salary(self):
+    def edit_salary(self) -> None:
         try:
-            all_salary = self.salary_utils.get_all_salary()
+            all_salary = self.edit.get_all_salary()
             print(all_salary)
         except EmptyDataAppError as e:
             print(e)
             return
-        while True:
-            try:
-                index = input("Select which salary to edit (by index): ")
-                if self.salary_utils.check_input_index(index, 1, len(all_salary)):
-                    index = int(index)
-                    break
-            except InvalidInputIndexError as e:
-                print(e)
+        index = self.prompt_index("Select which salary to edit (by index): ", 1, len(all_salary))
         while True:
             try:
                 new_salary = input("Input the new salary: ")

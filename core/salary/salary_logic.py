@@ -45,7 +45,7 @@ class CurrentSalarySimulation(SalaryBase):
         return current_salary_simulation
     
 class ChangeSalarySimulation(SalaryBase):
-    def update_current_simulation(self, index):
+    def update_current_simulation(self, index) -> None:
         salary_df = self.get_all_salary()
         index = int(index)
         index -= 1
@@ -58,7 +58,7 @@ class AddNewSalary(SalaryBase):
         self.duplicated_decision = 0
         self.exit_current_process = False
     
-    def reset(self):
+    def reset(self) -> None:
         self.duplicated_decision = 0
         self.exit_current_process = False
     
@@ -75,7 +75,7 @@ class AddNewSalary(SalaryBase):
         except ValueError:
             raise IncorrectTimeFormatError("incorrect/invalid format of inputted date! (must be MM-YYYY)")
             
-    def handle_duplicate_date_salary(self, decision: int):
+    def handle_duplicate_date_salary(self, decision: int) -> None:
         if decision == 1:
             self.duplicated_decision = 1
         elif decision == 2:
@@ -83,7 +83,7 @@ class AddNewSalary(SalaryBase):
         elif decision == 3:
             self.exit_current_process = True
     
-    def update_new_salary(self, new_date: str, new_salary: int):
+    def update_new_salary(self, new_date: str, new_salary: int) -> None:
         salary_data = self.get_all_salary()
         if self.duplicated_decision == 1:
             salary_data.loc[salary_data["date"] == new_date] = [new_date, new_salary]
@@ -98,7 +98,7 @@ class AddNewSalary(SalaryBase):
         self.salary_handler.save(salary_data)
         
 class EditSalary(SalaryBase):
-    def update_edit_salary(self, index: int, new_salary: int):
+    def update_edit_salary(self, index: int, new_salary: int) -> None:
         salary_data = self.get_all_salary()
         salary_data.loc[index, "salary"] = new_salary
         self.salary_handler.save(salary_data)
