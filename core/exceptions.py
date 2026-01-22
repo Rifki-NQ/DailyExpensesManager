@@ -18,8 +18,12 @@ class EmptyConfigDataError(EmptyDataAppError):
     """Raised when config file return completely empty data"""
     pass
 
-class MissingSimulationIndexError(EmptyDataAppError):
-    """Raised when config data return empty current_simulation_index"""
+class MissingSimulationDateError(EmptyDataAppError):
+    """Raised when config data return empty current_simulation_date"""
+    pass
+
+class InvalidSimulationDateError(EmptyDataAppError):
+    """Raised when current_simulation_date in the config does not exist in the salary data"""
     pass
         
 class FileNotFoundAppError(FileError):

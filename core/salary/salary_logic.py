@@ -1,8 +1,9 @@
 import pandas as pd
 from pathlib import Path
 from core.utils import DataIO, CheckInput, Sorter
-from core.exceptions import (MissingSimulationIndexError, DuplicatedDateError,
-                             IncorrectTimeFormatError, IncorrectInputSalary)
+from core.exceptions import (MissingSimulationDateError, DuplicatedDateError,
+                             IncorrectTimeFormatError, IncorrectInputSalary,
+                             InvalidSimulationDateError)
 
 class SalaryBase:
     def __init__(self):
@@ -29,17 +30,27 @@ class SalaryBase:
         return int(salary)
 
 class CurrentSalarySimulation(SalaryBase):
+    def __init__(self):
+        super().__init__()
+        self.df_salary = self.salary_handler.read()
+    
     def _load_simulation_date(self) -> int:
         config = self.config_handler.read()
         if config["current_simulation_date"] is None:
-            raise MissingSimulationIndexError("empty simulation date from the config!")
+            raise MissingSimulationDateError("empty simulation date from the config!")
+        if self._check_simulation_date(config["current_simulation_date"]):
+            raise InvalidSimulationDateError(f"salary with the date of {config["current_simulation_date"]} from the config does not exist in the salary data!")
         return config["current_simulation_date"]
+            
+    def _check_simulation_date(self, date: int) -> bool:
+        if (self.df_salary["date"] == date).any():
+            return False
+        return True
             
     def load_salary_simulation(self) -> list[str | int]:
         self.simulation_date = self._load_simulation_date()
-        df_salary = self.salary_handler.read()
-        df_salary = df_salary.loc[df_salary["date"] == self.simulation_date].iloc[0].tolist()
-        current_salary_simulation = df_salary
+        self.df_salary = self.df_salary.loc[self.df_salary["date"] == self.simulation_date].iloc[0].tolist()
+        current_salary_simulation = self.df_salary
         #convert np.int64 to int
         current_salary_simulation[1] = int(current_salary_simulation[1])
         return current_salary_simulation

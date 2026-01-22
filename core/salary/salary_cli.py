@@ -3,7 +3,7 @@ from core.salary.salary_logic import (SalaryBase, CurrentSalarySimulation, Chang
 from core.exceptions import (FileError, EmptyDataAppError, DuplicatedDateError,
                              InvalidInputIndexError, YAMLFileNotFoundError,
                              IncorrectTimeFormatError, IncorrectInputSalary,
-                             CSVFileNotFoundError, InvalidFileTypeError)
+                             CSVFileNotFoundError, InvalidFileTypeError,)
 
 class SalaryCLI:
     def __init__(self):
