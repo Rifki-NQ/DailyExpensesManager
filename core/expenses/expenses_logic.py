@@ -1,6 +1,5 @@
 from core.utils import DataIO
 from pathlib import Path
-from core.exceptions import IncorrectInputExpenses
 
 class ExpensesLogic:
     def __init__(self):
@@ -13,21 +12,19 @@ class ExpensesLogic:
                             "fuel": 0,
                             "installment": 0,
                             "internet": 0
-                        },
+                            },
                             "savings":{
                             "reksa_dana": 0,
                             "gold": 0
                             },
                             "free_to_spend":{
-                            "subscription": 0,
+                            "subscription": 0
                             }}
-        
-    
         
     def check_input_values(self, value: str) -> bool:
         if value.isdigit():
             return True
-        raise IncorrectInputExpenses("inputted expense must be digit!")
+        return False
     
     def get_all_expenses(self) -> dict[str, dict[str, int | None]]:
         return self.yaml_handler.read(format_data=True)
@@ -42,12 +39,12 @@ class SetExpenses(ExpensesLogic):
         self.input_header_progress = 0
         self.needs_reinput = False
     
-    def reset_input_progress(self):
+    def reset_input_progress(self) -> None:
         self.input_progress = 0
         self.input_header_progress = 0
         self.needs_reinput = False
     
-    def update_input_progress(self):
+    def update_input_progress(self) -> None:
         self.input_progress += 1
         self.input_header_progress += 1 if self.input_progress in (0, 6, 8) else 0
         
@@ -56,15 +53,20 @@ class SetExpenses(ExpensesLogic):
             return True
         return False
     
-    def reinput_value(self):
+    def reinput_value(self) -> None:
         self.needs_reinput = True
+    
+    def skip_input(self, header: str, key: str) -> None:
+        self.original_expenses = self.yaml_handler.read()
+        original_value = self.original_expenses[header][key]
+        self.update_expenses(header, key, original_value)
     
     def current_header_progress(self) -> bool:
         if self.input_progress in (0, 6, 8) and not self.needs_reinput:
             return True
         return False
     
-    def update_expenses(self, header: str, key: str, value: int):
+    def update_expenses(self, header: str, key: str, value: int) -> None:
         self.monthly_expenses[header][key] = value
         self.needs_reinput = False
         if self.input_progress == 8:

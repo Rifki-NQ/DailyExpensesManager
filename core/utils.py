@@ -47,7 +47,7 @@ class CSVFileHandler(DataIO):
     def __init__(self, file_path: str | Path):
         self.file_path = file_path
     
-    def read(self) -> pd.DataFrame:
+    def read(self, **kwargs) -> pd.DataFrame:
         try:
             pd.set_option("display.max_rows", None)
             df = pd.read_csv(self.file_path)
