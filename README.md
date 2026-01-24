@@ -1,6 +1,6 @@
 # DailyExpensesManager
-A python script to help user manage their expenses based on their monthly salary.
-User can input their monthly salary and create simulation how they should spend it
+A CLI-based app to help users manage expenses based on their monthly salary.
+Users can add their monthly salary and create simulation how they should spend it
 
 ## Features
 1. Salary DATA
@@ -11,6 +11,7 @@ User can input their monthly salary and create simulation how they should spend 
     - Delete salary
 
 2. Expenses DATA
+    - Show monthly expenses
     - Set monthly expenses
 
 ## Requirements
@@ -28,6 +29,5 @@ python main.py
 ```
 
 ## Planned Feature
-- Show monthly expenses
 - Edit monthly expenses
 - Show daily expenses simulation

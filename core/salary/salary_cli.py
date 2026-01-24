@@ -107,7 +107,7 @@ class SalaryCLI:
         except CSVFileNotFoundError as e:
             print(e)
             
-    def delete_salary(self):
+    def delete_salary(self) -> None:
         try:
             all_salary = self.delete.get_all_salary()
             print(all_salary)

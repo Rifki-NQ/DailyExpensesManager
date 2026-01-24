@@ -1,12 +1,16 @@
-from core.expenses.expenses_logic import (SetExpenses)
-from core.exceptions import (IncorrectInputExpenses, ConfigFileNotFoundError)
+from core.expenses.expenses_logic import (SetExpenses, ShowExpenses)
+from core.exceptions import (IncorrectInputExpenses, YAMLFileNotFoundError)
 
 class ExpensesCLI:
     def __init__(self):
         self.set_expenses = SetExpenses()
+        self.show_expenses = ShowExpenses()
         self.monthly_expenses_headers = ["necessary", "savings", "free_to_spend"]
         self.monthly_expenses_keys = ["meal", "electricity", "parents", "fuel", "installment",
                                       "internet", "reksa_dana", "gold", "subscription"]
+    
+    def show_monthly_expenses(self):
+        print(self.show_expenses.get_all_expenses())
     
     def set_monthly_expenses(self):
         self.set_expenses.reset_input_progress()
@@ -21,6 +25,7 @@ class ExpensesCLI:
                     self.set_expenses.update_input_progress()
             except IncorrectInputExpenses as e:
                 print(e)
-            except ConfigFileNotFoundError as e:
+                self.set_expenses.reinput_value()
+            except YAMLFileNotFoundError as e:
                 print(e)
                 return
