@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from core.exceptions import (CSVFileNotFoundError, YAMLFileNotFoundError, IncorrectTimeFormatError,
                              EmptySalaryDataError, EmptyConfigDataError, InvalidInputIndexError,
                              InvalidFileTypeError)
+from typing import Any
 
 class CheckInput:
     @staticmethod
@@ -20,7 +21,7 @@ class CheckInput:
         
 class DataIO(ABC):
     @abstractmethod
-    def read(self):
+    def read(self, **kwargs):
         pass
     
     @abstractmethod
@@ -61,13 +62,24 @@ class YAMLFileHandler(DataIO):
     def __init__(self, file_path: str | Path):
         self.file_path = file_path
     
-    def read(self) -> dict[str, str] | dict[str: None]:
+    def _format_yaml(self, data) -> dict[str, Any]:
+        formatted_yaml = yaml.dump(
+            data,
+            sort_keys=False,
+            default_flow_style=False
+        )
+        return formatted_yaml
+    
+    def read(self, **kwargs) -> dict[str, Any]:
+        format_data = kwargs.get("format_data", False)
         with open(self.file_path, "r") as file:
             config_data = yaml.safe_load(file)
         if isinstance(config_data, str):
             raise EmptyConfigDataError(f"failed to read ({self.file_path}) because it contains invalid config data!")
         elif config_data is None:
             raise EmptyConfigDataError(f"failed to read ({self.file_path}) because the file is empty!")
+        if format_data:
+            config_data = self._format_yaml(config_data)
         return config_data
         
     def save(self, data):
