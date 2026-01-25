@@ -3,8 +3,8 @@ from pathlib import Path
 
 class ExpensesLogic:
     def __init__(self):
-        self.MONTHLY_EXPENSES_FILEPATH = Path("data/monthly_expenses.yaml")
-        self.yaml_handler = DataIO.create_dataio(self.MONTHLY_EXPENSES_FILEPATH)
+        self.MONTHLY_EXPENSES_FILEPATH = "data/monthly_expenses.yaml"
+        self.yaml_handler = DataIO.create_dataio(Path(self.MONTHLY_EXPENSES_FILEPATH))
         self.monthly_expenses = {"necessary":{
                             "meal": 0,
                             "electricity": 0,

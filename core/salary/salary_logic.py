@@ -8,10 +8,10 @@ from core.exceptions import (MissingSimulationDateError, DuplicatedDateError,
 class SalaryBase:
     def __init__(self):
         self.simulation_date = ""
-        self.SALARY_DATA_FILEPATH = Path("data/salary_data.csv")
-        self.CONFIG_FILEPATH = Path("data/config.yaml")
-        self.salary_handler = DataIO.create_dataio(self.SALARY_DATA_FILEPATH)
-        self.config_handler = DataIO.create_dataio(self.CONFIG_FILEPATH)
+        self.SALARY_DATA_FILEPATH = "data/salary_data.csv"
+        self.CONFIG_FILEPATH = "data/config.yaml"
+        self.salary_handler = DataIO.create_dataio(Path(self.SALARY_DATA_FILEPATH))
+        self.config_handler = DataIO.create_dataio(Path(self.CONFIG_FILEPATH))
 
     def get_all_salary(self) -> pd.DataFrame:
         all_salary = self.salary_handler.read()

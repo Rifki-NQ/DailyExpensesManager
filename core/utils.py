@@ -44,7 +44,7 @@ class DataIO(ABC):
             return YAMLFileHandler(file_path)
     
 class CSVFileHandler(DataIO):
-    def __init__(self, file_path: str | Path):
+    def __init__(self, file_path: Path):
         self.file_path = file_path
     
     def read(self, **kwargs) -> pd.DataFrame:
@@ -59,7 +59,7 @@ class CSVFileHandler(DataIO):
         df.to_csv(self.file_path, index=False)
          
 class YAMLFileHandler(DataIO):
-    def __init__(self, file_path: str | Path):
+    def __init__(self, file_path: Path):
         self.file_path = file_path
     
     def _format_yaml(self, data) -> dict[str, Any]:

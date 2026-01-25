@@ -28,7 +28,8 @@ class SalaryCLI:
     def show_current_simulation(self) -> None:
         try:
             current_simulation = self.show.load_salary_simulation()
-            print(current_simulation)
+            print(f"------ Current simulation Date: {current_simulation[0]} ------")
+            print(f"----- Current simulation Salary: {current_simulation[1]} -----")
         except FileError as e:
             print(e)
             return
