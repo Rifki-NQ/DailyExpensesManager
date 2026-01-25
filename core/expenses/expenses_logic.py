@@ -5,6 +5,9 @@ class ExpensesLogic:
     def __init__(self):
         self.MONTHLY_EXPENSES_FILEPATH = "data/monthly_expenses.yaml"
         self.yaml_handler = DataIO.create_dataio(Path(self.MONTHLY_EXPENSES_FILEPATH))
+        self.monthly_expenses_headers = ["necessary", "savings", "free_to_spend"]
+        self.monthly_expenses_keys = ["meal", "electricity", "parents", "fuel", "installment",
+                                      "internet", "reksa_dana", "gold", "subscription"]
         self.monthly_expenses = {"necessary":{
                             "meal": 0,
                             "electricity": 0,
@@ -71,3 +74,16 @@ class SetExpenses(ExpensesLogic):
         self.needs_reinput = False
         if self.input_progress == 8:
             self.yaml_handler.save(self.monthly_expenses)
+            
+class EditExpenses(ExpensesLogic):
+    def update_edit_expense(self, index: int, new_expense: int) -> None:
+        if index < 6:
+            header = self.monthly_expenses_headers[0]
+        if index in range(6, 8):
+            header = self.monthly_expenses_headers[1]
+        if index == 8:
+            header = self.monthly_expenses_headers[2]
+        #read the original data first, modify it then save it back
+        self.monthly_expenses = self.yaml_handler.read()
+        self.monthly_expenses[header][self.monthly_expenses_keys[index]] = int(new_expense)
+        self.yaml_handler.save(self.monthly_expenses)

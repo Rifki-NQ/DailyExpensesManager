@@ -13,6 +13,7 @@ Users can add their monthly salary and create simulation how they should spend i
 2. Expenses DATA
     - Show monthly expenses
     - Set monthly expenses
+    - Edit monthly expenses
 
 ## Requirements
 - Python 3.10+
@@ -29,5 +30,4 @@ python main.py
 ```
 
 ## Planned Feature
-- Edit monthly expenses
 - Show daily expenses simulation

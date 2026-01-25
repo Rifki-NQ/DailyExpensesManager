@@ -31,6 +31,7 @@ class MainMenu:
         elif self.choosen_menu == 2:
             print("1. Show monthly expenses")
             print("2. Set monthly expenses")
+            print("3. Edit monthly expenses")
     
     def input_menu_choices(self):
         while self.is_running:
@@ -86,6 +87,8 @@ class MainMenu:
                 self.expenses_data.show_monthly_expenses()
             elif self.choosen_sub_menu == 2:
                 self.expenses_data.set_monthly_expenses()
+            elif self.choosen_sub_menu == 3:
+                self.expenses_data.edit_monthly_expenses()
     
     def run(self):
         while self.is_running:
@@ -99,5 +102,5 @@ class MainMenu:
                 print(e)
     
 if __name__ == "__main__":
-    app = MainMenu(2, 5, 2)
+    app = MainMenu(2, 5, 3)
     app.run()
