@@ -3,7 +3,7 @@ from pathlib import Path
 from core.utils import DataIO, CheckInput, Sorter
 from core.exceptions import (MissingSimulationDateError, DuplicatedDateError,
                              IncorrectTimeFormatError, IncorrectInputSalary,
-                             InvalidSimulationDateError)
+                             InvalidSimulationDateError, EmptyConfigDataError)
 
 class SalaryBase:
     def __init__(self):
@@ -36,6 +36,9 @@ class CurrentSalarySimulation(SalaryBase):
     
     def _load_simulation_date(self) -> int:
         config = self.config_handler.read()
+        #check config data validity from config.yaml
+        if isinstance(config, str):
+            raise EmptyConfigDataError(f"invalid config data detected from the file!")
         if config["current_simulation_date"] is None:
             raise MissingSimulationDateError("empty simulation date from the config!")
         if self._check_simulation_date(config["current_simulation_date"]):

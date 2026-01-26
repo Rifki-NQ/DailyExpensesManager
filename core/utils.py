@@ -3,8 +3,8 @@ import yaml
 from pathlib import Path
 from abc import ABC, abstractmethod
 from core.exceptions import (CSVFileNotFoundError, YAMLFileNotFoundError, IncorrectTimeFormatError,
-                             EmptySalaryDataError, EmptyConfigDataError, InvalidInputIndexError,
-                             InvalidFileTypeError, EmptyDataAppError)
+                             EmptySalaryDataError, EmptyDataAppError, InvalidInputIndexError,
+                             InvalidFileTypeError)
 from typing import Any
 
 class CheckInput:
@@ -79,9 +79,6 @@ class YAMLFileHandler(DataIO):
                 data = yaml.safe_load(file)
         except FileNotFoundError:
             raise YAMLFileNotFoundError(f"failed to read/write ({self.file_path}) because the file does not exist!")
-        #check data validity from config.yaml
-        if self.file_path == Path("data/config.yaml") and isinstance(data, str):
-            raise EmptyConfigDataError(f"failed to read ({self.file_path}) because it contains invalid config data!")
         #return error if any data is empty
         if data is None:
             raise EmptyDataAppError(f"failed to read ({self.file_path}) because the file is empty!")
