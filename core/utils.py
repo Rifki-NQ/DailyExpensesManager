@@ -4,7 +4,7 @@ from pathlib import Path
 from abc import ABC, abstractmethod
 from core.exceptions import (CSVFileNotFoundError, YAMLFileNotFoundError, IncorrectTimeFormatError,
                              EmptySalaryDataError, EmptyConfigDataError, InvalidInputIndexError,
-                             InvalidFileTypeError)
+                             InvalidFileTypeError, EmptyDataAppError)
 from typing import Any
 
 class CheckInput:
@@ -54,6 +54,8 @@ class CSVFileHandler(DataIO):
             return df
         except pd.errors.EmptyDataError:
             raise EmptySalaryDataError(f"failed to read ({self.file_path}) because the file is empty!")
+        except FileNotFoundError:
+            raise CSVFileNotFoundError(f"failed to read/write ({self.file_path}) because the file does not exist!")
          
     def save(self, df):
         df.to_csv(self.file_path, index=False)
@@ -72,15 +74,20 @@ class YAMLFileHandler(DataIO):
     
     def read(self, **kwargs) -> dict[str, Any]:
         format_data = kwargs.get("format_data", False)
-        with open(self.file_path, "r") as file:
-            config_data = yaml.safe_load(file)
-        if isinstance(config_data, str):
+        try:
+            with open(self.file_path, "r") as file:
+                data = yaml.safe_load(file)
+        except FileNotFoundError:
+            raise YAMLFileNotFoundError(f"failed to read/write ({self.file_path}) because the file does not exist!")
+        #check data validity from config.yaml
+        if self.file_path == Path("data/config.yaml") and isinstance(data, str):
             raise EmptyConfigDataError(f"failed to read ({self.file_path}) because it contains invalid config data!")
-        elif config_data is None:
-            raise EmptyConfigDataError(f"failed to read ({self.file_path}) because the file is empty!")
+        #return error if any data is empty
+        if data is None:
+            raise EmptyDataAppError(f"failed to read ({self.file_path}) because the file is empty!")
         if format_data:
-            config_data = self._format_yaml(config_data)
-        return config_data
+            data = self._format_yaml(data)
+        return data
         
     def save(self, data):
         with open(self.file_path, "w+") as file:
