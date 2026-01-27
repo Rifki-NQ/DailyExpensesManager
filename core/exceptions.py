@@ -60,3 +60,6 @@ class DuplicatedDateError(TimeError):
 class IncorrectInputSalary(FileError):
     """Raised when inputted salary is not valid"""
     pass
+
+class InvalidDaysLengthError(TimeError):
+    """Raised when inputted days length is invalid"""

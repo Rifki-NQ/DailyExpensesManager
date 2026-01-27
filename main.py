@@ -1,5 +1,5 @@
 from core.salary.salary_cli import SalaryCLI
-from core.expenses.expenses_cli import ExpensesCLI
+from core.expenses.expenses_cli import ExpensesCLI, DailyExpensesCLI
 from core.utils import CheckInput
 from core.exceptions import AppError, InvalidInputIndexError
 
@@ -11,24 +11,26 @@ class MainMenu:
         self.is_running = True
         self.choosen_menu = 0
         self.choosen_sub_menu = 0
+        self.daily_expenses = DailyExpensesCLI()
         self.salary_data = SalaryCLI()
         self.expenses_data = ExpensesCLI()
     
     def show_menu(self):
         print("Daily Expenses Manager")
         print("< ------------------ >")
-        print("1. Salary DATA")
-        print("2. Expenses DATA")
+        print("1. Show daily expenses simulation")
+        print("2. Salary DATA")
+        print("3. Expenses DATA")
     
     def show_sub_menu(self):
         print("< ------------------ >")
-        if self.choosen_menu == 1:
+        if self.choosen_menu == 2:
             print("1. Show current salary simulation")
             print("2. Change current salary simulation")
             print("3. Add new salary")
             print("4. Edit salary")
             print("5. Delete salary")
-        elif self.choosen_menu == 2:
+        elif self.choosen_menu == 3:
             print("1. Show monthly expenses")
             print("2. Set monthly expenses")
             print("3. Edit monthly expenses")
@@ -48,6 +50,8 @@ class MainMenu:
     def input_sub_menu_choices(self):
         while self.is_running:
             if self.choosen_menu == 1:
+                break
+            if self.choosen_menu == 2:
                 try:
                     self.choosen_sub_menu = input("Input by index (q to quit): ")
                     if CheckInput.check_digit(self.choosen_sub_menu, 1, self.total_sub_menu_first, quit_option=True):
@@ -57,7 +61,7 @@ class MainMenu:
                         break
                 except InvalidInputIndexError as e:
                     print(e)
-            elif self.choosen_menu == 2:
+            elif self.choosen_menu == 3:
                 try:
                     self.choosen_sub_menu = input("Input by index (q to quit): ")
                     if CheckInput.check_digit(self.choosen_sub_menu, 1, self.total_sub_menu_second, quit_option=True):
@@ -69,8 +73,11 @@ class MainMenu:
                     print(e)
                 
     def run_choosen_method(self):
-        #Salary menu
+        #Main feature
         if self.choosen_menu == 1:
+            self.daily_expenses.show_daily_expenses()
+        #Salary menu
+        if self.choosen_menu == 2:
             if self.choosen_sub_menu == 1:
                 self.salary_data.show_current_simulation()
             elif self.choosen_sub_menu == 2:
@@ -83,7 +90,7 @@ class MainMenu:
                 self.salary_data.delete_salary()
         #Expenses menu
         if self.choosen_menu == 2:
-            if self.choosen_sub_menu == 1:
+            if self.choosen_sub_menu == 3:
                 self.expenses_data.show_monthly_expenses()
             elif self.choosen_sub_menu == 2:
                 self.expenses_data.set_monthly_expenses()
@@ -102,5 +109,5 @@ class MainMenu:
                 print(e)
     
 if __name__ == "__main__":
-    app = MainMenu(2, 5, 3)
+    app = MainMenu(3, 5, 3)
     app.run()

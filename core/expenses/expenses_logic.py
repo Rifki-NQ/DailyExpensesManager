@@ -1,5 +1,6 @@
 from core.utils import DataIO
 from pathlib import Path
+from core.exceptions import (InvalidDaysLengthError)
 
 class ExpensesLogic:
     def __init__(self):
@@ -31,6 +32,17 @@ class ExpensesLogic:
     
     def get_all_expenses(self) -> dict[str, dict[str, int | None]]:
         return self.yaml_handler.read(format_data=True)
+    
+class DailyExpensesLogic(ExpensesLogic):
+    def validate_days_length(self, value: str) -> bool:
+        if value.isdigit() and int(value) < 1:
+            raise InvalidDaysLengthError("Days length cannot below 1!")
+        elif value.isdigit() and int(value) > 31:
+            raise InvalidDaysLengthError("Days length cannot be over 31 days!")
+        elif value.isdigit():
+            return True
+        else:
+            raise InvalidDaysLengthError("Days length must be in digit!")
     
 class ShowExpenses(ExpensesLogic):
     pass
