@@ -1,5 +1,7 @@
 from core.utils import DataIO
 from pathlib import Path
+from typing import Literal
+ExpensesMergeOptions = Literal[False, "all", "necessary", "savings", "free_to_spend"]
 
 class ExpensesLogic:
     def __init__(self):
@@ -29,8 +31,9 @@ class ExpensesLogic:
             return True
         return False
     
-    def get_all_expenses(self) -> dict[str, dict[str, int | None]]:
-        return self.yaml_handler.read(format_data=True)
+    def get_all_expenses(self, merge: ExpensesMergeOptions = False) -> dict[str, dict[str, int | None]]:
+        if not merge:
+            return self.yaml_handler.read(format_data=True)
     
 class ShowExpenses(ExpensesLogic):
     pass
