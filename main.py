@@ -1,7 +1,11 @@
 from core.salary.salary_cli import SalaryCLI
-from core.expenses.expenses_cli import ExpensesCLI, DailyExpensesCLI
+from core.expenses.expenses_cli import ExpensesCLI
+from core.simulation.simulation_cli import DailyExpensesCLI
 from core.utils import CheckInput
 from core.exceptions import AppError, InvalidInputIndexError
+from core.salary.salary_logic import CurrentSalarySimulation
+from core.expenses.expenses_logic import ExpensesLogic
+from core.simulation.simulation_logic import DailyExpensesLogic
 
 class MainMenu:
     def __init__(self, total_menu, total_sub_menu_first, total_sub_menu_second):
@@ -11,7 +15,9 @@ class MainMenu:
         self.is_running = True
         self.choosen_menu = 0
         self.choosen_sub_menu = 0
-        self.daily_expenses = DailyExpensesCLI()
+        #injected dependency for daily expenses simulation
+        self.daily_expenses = DailyExpensesCLI(CurrentSalarySimulation(),
+                                               ExpensesLogic(), DailyExpensesLogic())
         self.salary_data = SalaryCLI()
         self.expenses_data = ExpensesCLI()
     
