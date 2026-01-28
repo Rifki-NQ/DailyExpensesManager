@@ -95,7 +95,7 @@ class MainMenu:
             elif self.choosen_sub_menu == 5:
                 self.salary_data.delete_salary()
         #Expenses menu
-        if self.choosen_menu == 2:
+        if self.choosen_menu == 3:
             if self.choosen_sub_menu == 3:
                 self.expenses_data.show_monthly_expenses()
             elif self.choosen_sub_menu == 2:
