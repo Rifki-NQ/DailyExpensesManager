@@ -52,11 +52,10 @@ class CurrentSalarySimulation(SalaryBase):
             
     def load_salary_simulation(self) -> list[str | int]:
         self.simulation_date = self._load_simulation_date()
-        self.df_salary = self.df_salary.loc[self.df_salary["date"] == self.simulation_date].iloc[0].tolist()
-        current_salary_simulation = self.df_salary
+        salary_data = self.df_salary.loc[self.df_salary["date"] == self.simulation_date].iloc[0].tolist()
         #convert np.int64 to int
-        current_salary_simulation[1] = int(current_salary_simulation[1])
-        return current_salary_simulation
+        salary_data[1] = int(salary_data[1])
+        return salary_data
     
 class ChangeSalarySimulation(SalaryBase):
     def update_current_simulation(self, index) -> None:
