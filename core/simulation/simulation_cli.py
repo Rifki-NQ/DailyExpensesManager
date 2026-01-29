@@ -1,36 +1,22 @@
 from core.exceptions import (InvalidDaysLengthError, FileError)
-from typing import Literal
 
 class DailyExpensesCLI():
-    def __init__(self, salary_logic, expenses_logic, simulation_logic):
-        self.salary_data = salary_logic
-        self.expenses_data = expenses_logic
-        self.daily_expenses = simulation_logic
+    def __init__(self, simulation_logic):
+        self.simulation_logic = simulation_logic
         self.total_salary: int
         self.salary_date: str
         self.total_expenses: int
     
-    def get_salary(self, include: Literal["date", "salary"]) -> str | int:
-        salary_data = self.salary_data.load_salary_simulation()
-        if include == "date":
-            return salary_data[0]
-        elif include == "salary":
-            return salary_data[1]
-    
-    def get_expenses(self, merge: bool = True) -> int:
-        all_expenses = self.expenses_data.get_all_expenses()
-        return all_expenses
-    
     def load_total_data(self) -> None:
-        self.salary_date = self.get_salary("date")
-        self.total_salary = self.get_salary("salary")
-        self.total_expenses = self.get_expenses()
+        self.salary_date = self.simulation_logic.get_salary("date")
+        self.total_salary = self.simulation_logic.get_salary("salary")
+        self.total_expenses = self.simulation_logic.get_expenses()
     
     def prompt_days_length(self) -> int:
         while True:
             try:
                 days_length = input("Enter days length (1 to 31): ")
-                if self.daily_expenses.validate_days_length(days_length):
+                if self.simulation_logic.validate_days_length(days_length):
                     return int(days_length)
             except InvalidDaysLengthError as e:
                 print(e)

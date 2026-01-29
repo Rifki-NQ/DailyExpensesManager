@@ -16,8 +16,8 @@ class MainMenu:
         self.choosen_menu = 0
         self.choosen_sub_menu = 0
         #injected dependency for daily expenses simulation
-        self.daily_expenses = DailyExpensesCLI(CurrentSalarySimulation(),
-                                               ExpensesLogic(), DailyExpensesLogic())
+        self.simulation_logic = DailyExpensesLogic(CurrentSalarySimulation(), ExpensesLogic())
+        self.daily_expenses = DailyExpensesCLI(self.simulation_logic)
         self.salary_data = SalaryCLI()
         self.expenses_data = ExpensesCLI()
     
