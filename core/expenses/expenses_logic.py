@@ -1,7 +1,7 @@
 from core.utils import DataIO
 from pathlib import Path
 from typing import Literal
-ExpensesMergeOptions = Literal[False, "all", "necessary", "savings", "free_to_spend"]
+ExpensesMergeOptions = Literal["necessary", "savings", "free_to_spend"]
 
 class ExpensesLogic:
     def __init__(self):
@@ -31,9 +31,29 @@ class ExpensesLogic:
             return True
         return False
     
-    def get_all_expenses(self, merge: ExpensesMergeOptions = False) -> dict[str, dict[str, int | None]]:
-        if not merge:
-            return self.yaml_handler.read(format_data=True)
+    def get_all_expenses(self, format_data: bool = True) -> str | dict[str, dict[str, int]]:
+        return self.yaml_handler.read(format_data=format_data)
+    
+    def get_total_expenses(self) -> int:
+        expenses_data = self.yaml_handler.read(format_data=False)
+        return self._get_merged_expenses(expenses_data, merge="all")
+    
+    def get_total_expenses_category(self, merge_category: ExpensesMergeOptions) -> int:
+        expenses_data = self.yaml_handler.read(format_data=False)
+        return self._get_merged_expenses(expenses_data, merge=merge_category)
+    
+    #helper for getting merged expenses
+    def _get_merged_expenses(self, data: dict[str, dict[str, int]], merge: ExpensesMergeOptions) -> int:
+        merged_expenses = 0
+        if merge == "all":
+            for inner_dict in data.values():
+                for value in inner_dict.values():
+                    merged_expenses += value
+            return merged_expenses
+        else:
+            for value in data[merge].values():
+                merged_expenses += value
+            return merged_expenses
     
 class ShowExpenses(ExpensesLogic):
     pass
