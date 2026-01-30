@@ -31,3 +31,5 @@ python main.py
 
 ## Planned Feature
 - Show daily expenses simulation
+- Add new expenses category and value
+- Edit or delete expenses category and value
