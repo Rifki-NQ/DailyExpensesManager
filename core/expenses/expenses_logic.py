@@ -3,6 +3,26 @@ from pathlib import Path
 from typing import Literal
 ExpensesMergeOptions = Literal["necessary", "savings", "free_to_spend"]
 
+class ExpensesKey:
+    def __init__(self, data_io):
+        self.yaml_handler = data_io
+        
+    def get_expenses_header(self) -> list[str]:
+        expenses_data = self.yaml_handler.read()
+        headers = []
+        for header in expenses_data.keys():
+            headers.append(header)
+        return headers
+    
+    def get_expenses_keys(self) -> list[str]:
+        expenses_data = self.yaml_handler.read()
+        keys = []
+        for header in expenses_data:
+            for key in expenses_data[header]:
+                keys.append(key)
+        return keys
+        
+
 class ExpensesLogic:
     def __init__(self):
         self.MONTHLY_EXPENSES_FILEPATH = "data/monthly_expenses.yaml"

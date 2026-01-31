@@ -1,12 +1,12 @@
-from core.expenses.expenses_logic import (SetExpenses, ShowExpenses, EditExpenses)
 from core.exceptions import (YAMLFileNotFoundError, InvalidInputIndexError)
 from core.utils import CheckInput
 
 class ExpensesCLI:
-    def __init__(self):
-        self.set_expenses = SetExpenses()
-        self.show_expenses = ShowExpenses()
-        self.edit_expenses = EditExpenses()
+    def __init__(self, SetExpenses, ShowExpenses, EditExpenses, ExpensesKeys):
+        self.set_expenses = SetExpenses
+        self.show_expenses = ShowExpenses
+        self.edit_expenses = EditExpenses
+        self.expenses_keys = ExpensesKeys
         self.monthly_expenses_headers = ["necessary", "savings", "free_to_spend"]
         self.monthly_expenses_keys = ["meal", "electricity", "parents", "fuel", "installment",
                                       "internet", "reksa_dana", "gold", "subscription"]
