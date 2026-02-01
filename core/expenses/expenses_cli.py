@@ -35,29 +35,29 @@ class ExpensesCLI:
         except FileError as e:
             print(e)
             return
-        self.set_expenses.reset_input_progress()
-        while self.set_expenses.update_not_complete():
-            if self.set_expenses.current_header_progress():
-                    print(f"----- {self.monthly_expenses_headers[self.set_expenses.input_header_progress].upper()} -----")
-            try:
-                print(f"Set expense for {self.monthly_expenses_keys[self.set_expenses.input_progress]} or type 's' to skip and use the original")
-                new_expense = input("Enter amount ('s' to skip): ")
-                if self.set_expenses.check_input_values(new_expense):
-                    self.set_expenses.update_expenses(self.monthly_expenses_headers[self.set_expenses.input_header_progress],
-                                                      self.monthly_expenses_keys[self.set_expenses.input_progress], int(new_expense))
-                    self.set_expenses.update_input_progress()
-                #use original value if user input 's'
-                elif new_expense.lower() == "s":
-                    self.set_expenses.skip_input(self.monthly_expenses_headers[self.set_expenses.input_header_progress],
-                                                      self.monthly_expenses_keys[self.set_expenses.input_progress])
-                    self.set_expenses.update_input_progress()
-                else:
-                    print("inputted expense must be digit!")
-                    self.set_expenses.reinput_value()
-            except YAMLFileNotFoundError as e:
-                print(e)
-                return
-        print("----- Expenses updated successfully! -----\n")
+        monthly_expenses = self.set_expenses.get_all_expenses(format_data=False)
+        print("Update all expenses:\n"
+              f"- Total expenses to update: {self.monthly_expenses_length}\n"
+              "- you can type 's' to skip and use the original")
+        for category, expenses in monthly_expenses.items():
+            print(f"\n----- {category.upper()} -----")
+            for expense in expenses:
+                while True:
+                    print(f"Set expense for {expense}")
+                    new_expense = input("Enter amount ('s' to skip): ")
+                    if self.set_expenses.validate_value(new_expense):
+                        try:
+                            self.set_expenses.update_expenses(category, expense, int(new_expense))
+                        except YAMLFileNotFoundError as e:
+                            print(e)
+                            return
+                        break
+                    #use original value if user input 's'
+                    elif new_expense.lower() == "s":
+                        break
+                    else:
+                        print("inputted expense must be digit!")
+        print("\n----- Expenses update completed successfully! -----\n")
         
     def edit_monthly_expenses(self) -> None:
         try:

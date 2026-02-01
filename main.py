@@ -45,7 +45,7 @@ class MainMenu:
             print("5. Delete salary")
         elif self.choosen_menu == 3:
             print("1. Show monthly expenses")
-            print("2. Set monthly expenses")
+            print("2. Update all monthly expenses")
             print("3. Edit monthly expenses")
     
     def input_menu_choices(self):
