@@ -62,20 +62,17 @@ class ExpensesCLI:
     def edit_monthly_expenses(self) -> None:
         try:
             self.load_keys()
+            expenses_data = self.edit_expenses.get_all_expenses(format_data=False)
         except FileError as e:
             print(e)
             return
         print("")
-        for header_index, header in enumerate(self.monthly_expenses_headers):
-            print(f"----- {header} -----")
-            for key_index, key in enumerate(self.monthly_expenses_keys):
-                if header_index == 0 and key_index > 5:
-                    continue
-                if header_index == 1 and (key_index < 6 or key_index >= 8):
-                    continue
-                if header_index == 2 and key_index != 8:
-                    continue
-                print(f"{key_index + 1}. {key}")
+        index = 1
+        for category in expenses_data:
+            print(f"----- {category.upper()} -----")
+            for expense in expenses_data[category]:
+                print(f"{index}. {expense}")
+                index += 1
         print("")
         index = self.prompt_index("Select which expense to edit (by index): ", 1, len(self.monthly_expenses_keys))
         index -= 1
@@ -84,5 +81,7 @@ class ExpensesCLI:
             if new_expense.isdigit():
                 break
             print("Expense must be in digit!")
-        self.edit_expenses.update_edit_expense(index, new_expense)
+        self.edit_expenses.update_edit_expense(self.edit_expenses.get_expenses_by_index(expenses_data, index, "category"),
+                                               self.edit_expenses.get_expenses_by_index(expenses_data, index, "expenses"),
+                                               int(new_expense))
         print(f"({self.monthly_expenses_keys[index]}) expense edited successfully!\n")

@@ -1,7 +1,6 @@
-from core.utils import DataIO
-from pathlib import Path
 from typing import Literal
 ExpensesMergeOptions = Literal["necessary", "savings", "free_to_spend"]
+KeysOption = Literal["category", "expenses"]
 
 class ExpensesKeyExtractor:
     def __init__(self, YAMLFileHandler):
@@ -25,8 +24,6 @@ class ExpensesKeyExtractor:
 class ExpensesLogic:
     def __init__(self, YAMLFileHandler):
         self.yaml_handler = YAMLFileHandler
-        self.monthly_expenses_headers = []
-        self.monthly_expenses_keys = []
         self.monthly_expenses = {"necessary":{
                             "meal": 0,
                             "electricity": 0,
@@ -72,6 +69,17 @@ class ExpensesLogic:
                 merged_expenses += value
             return merged_expenses
     
+    #helper for getting expense by index (based on the 2nd level of the dict total keys)
+    def get_expenses_by_index(self, expenses_data: dict, index: int, returned_key: KeysOption) -> str:
+        count = 0
+        for category, expenses in expenses_data.items():
+            for expense in expenses:
+                if count == index and returned_key == "category":
+                    return category
+                elif count == index and returned_key == "expenses":
+                    return expense
+                count+=1
+    
 class ShowExpenses(ExpensesLogic):
     pass
             
@@ -100,8 +108,8 @@ class SetExpenses(ExpensesLogic):
         self.needs_reinput = True
     
     def skip_input(self, header: str, key: str) -> None:
-        self.original_expenses = self.yaml_handler.read()
-        original_value = self.original_expenses[header][key]
+        original_expenses = self.yaml_handler.read()
+        original_value = original_expenses[header][key]
         self.update_expenses(header, key, original_value)
     
     def current_header_progress(self) -> bool:
@@ -116,14 +124,8 @@ class SetExpenses(ExpensesLogic):
             self.yaml_handler.save(self.monthly_expenses)
             
 class EditExpenses(ExpensesLogic):
-    def update_edit_expense(self, index: int, new_expense: int) -> None:
-        if index < 6:
-            header = self.monthly_expenses_headers[0]
-        if index in range(6, 8):
-            header = self.monthly_expenses_headers[1]
-        if index == 8:
-            header = self.monthly_expenses_headers[2]
+    def update_edit_expense(self, category_key: str, expenses_key: str, new_expense: int) -> None:
         #read the original data first, modify it then save it back
-        self.monthly_expenses = self.yaml_handler.read()
-        self.monthly_expenses[header][self.monthly_expenses_keys[index]] = int(new_expense)
-        self.yaml_handler.save(self.monthly_expenses)
+        expenses_data = self.yaml_handler.read()
+        expenses_data[category_key][expenses_key] = new_expense
+        self.yaml_handler.save(expenses_data)
