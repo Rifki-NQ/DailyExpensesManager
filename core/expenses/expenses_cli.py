@@ -1,15 +1,21 @@
-from core.exceptions import (YAMLFileNotFoundError, InvalidInputIndexError)
+from core.exceptions import (FileError, YAMLFileNotFoundError, InvalidInputIndexError)
 from core.utils import CheckInput
 
 class ExpensesCLI:
-    def __init__(self, SetExpenses, ShowExpenses, EditExpenses, ExpensesKeys):
+    def __init__(self, SetExpenses, ShowExpenses, EditExpenses, ExpensesKeyExtractor):
         self.set_expenses = SetExpenses
         self.show_expenses = ShowExpenses
         self.edit_expenses = EditExpenses
-        self.expenses_keys = ExpensesKeys
-        self.monthly_expenses_headers = ["necessary", "savings", "free_to_spend"]
-        self.monthly_expenses_keys = ["meal", "electricity", "parents", "fuel", "installment",
-                                      "internet", "reksa_dana", "gold", "subscription"]
+        self.expenses_keys = ExpensesKeyExtractor
+        self.monthly_expenses_headers = []
+        self.monthly_expenses_keys = []
+        self.monthly_expenses_length = 0
+        
+    def load_keys(self) -> None:
+        self.monthly_expenses_headers = self.expenses_keys.get_category_keys()
+        self.monthly_expenses_keys = self.expenses_keys.get_expenses_keys()
+        self.monthly_expenses_length = len(self.monthly_expenses_keys)
+        
     #helper to input and validate inputted index
     def prompt_index(self, message: str, min_value: int, max_value: int) -> int:
         while True:
@@ -24,6 +30,11 @@ class ExpensesCLI:
         print(self.show_expenses.get_all_expenses())
     
     def set_monthly_expenses(self) -> None:
+        try:
+            self.load_keys()
+        except FileError as e:
+            print(e)
+            return
         self.set_expenses.reset_input_progress()
         while self.set_expenses.update_not_complete():
             if self.set_expenses.current_header_progress():
@@ -49,6 +60,11 @@ class ExpensesCLI:
         print("----- Expenses updated successfully! -----\n")
         
     def edit_monthly_expenses(self) -> None:
+        try:
+            self.load_keys()
+        except FileError as e:
+            print(e)
+            return
         print("")
         for header_index, header in enumerate(self.monthly_expenses_headers):
             print(f"----- {header} -----")

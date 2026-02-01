@@ -3,33 +3,30 @@ from pathlib import Path
 from typing import Literal
 ExpensesMergeOptions = Literal["necessary", "savings", "free_to_spend"]
 
-class ExpensesKey:
-    def __init__(self, data_io):
-        self.yaml_handler = data_io
+class ExpensesKeyExtractor:
+    def __init__(self, YAMLFileHandler):
+        self.yaml_handler = YAMLFileHandler
         
-    def get_expenses_header(self) -> list[str]:
+    def get_category_keys(self) -> list[str]:
         expenses_data = self.yaml_handler.read()
-        headers = []
-        for header in expenses_data.keys():
-            headers.append(header)
-        return headers
+        category_keys = []
+        for category_key in expenses_data.keys():
+            category_keys.append(category_key)
+        return category_keys
     
     def get_expenses_keys(self) -> list[str]:
         expenses_data = self.yaml_handler.read()
-        keys = []
-        for header in expenses_data:
-            for key in expenses_data[header]:
-                keys.append(key)
-        return keys
-        
+        expenses_keys = []
+        for category_key in expenses_data:
+            for expenses_key in expenses_data[category_key]:
+                expenses_keys.append(expenses_key)
+        return expenses_keys
 
 class ExpensesLogic:
-    def __init__(self):
-        self.MONTHLY_EXPENSES_FILEPATH = "data/monthly_expenses.yaml"
-        self.yaml_handler = DataIO.create_dataio(Path(self.MONTHLY_EXPENSES_FILEPATH))
-        self.monthly_expenses_headers = ["necessary", "savings", "free_to_spend"]
-        self.monthly_expenses_keys = ["meal", "electricity", "parents", "fuel", "installment",
-                                      "internet", "reksa_dana", "gold", "subscription"]
+    def __init__(self, YAMLFileHandler):
+        self.yaml_handler = YAMLFileHandler
+        self.monthly_expenses_headers = []
+        self.monthly_expenses_keys = []
         self.monthly_expenses = {"necessary":{
                             "meal": 0,
                             "electricity": 0,
@@ -79,8 +76,8 @@ class ShowExpenses(ExpensesLogic):
     pass
             
 class SetExpenses(ExpensesLogic):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, YAMLFileHandler):
+        super().__init__(YAMLFileHandler)
         self.input_progress = 0
         self.input_header_progress = 0
         self.needs_reinput = False

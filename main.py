@@ -4,8 +4,11 @@ from core.simulation.simulation_cli import DailyExpensesCLI
 from core.utils import CheckInput
 from core.exceptions import AppError, InvalidInputIndexError
 from core.salary.salary_logic import CurrentSalarySimulation
-from core.expenses.expenses_logic import ExpensesLogic
+from core.expenses.expenses_logic import (ExpensesLogic, SetExpenses, ExpensesKeyExtractor,
+                                          ShowExpenses, EditExpenses)
 from core.simulation.simulation_logic import DailyExpensesLogic
+from core.utils import DataIO
+from pathlib import Path
 
 class MainMenu:
     def __init__(self, total_menu, total_sub_menu_first, total_sub_menu_second):
@@ -15,11 +18,15 @@ class MainMenu:
         self.is_running = True
         self.choosen_menu = 0
         self.choosen_sub_menu = 0
-        #injected dependency for daily expenses simulation
-        self.simulation_logic = DailyExpensesLogic(CurrentSalarySimulation(), ExpensesLogic())
+        self.MONTHLY_EXPENSES_FILEPATH = "data/monthly_expenses.yaml"
+        self.yaml_file_handler = DataIO.create_dataio(Path(self.MONTHLY_EXPENSES_FILEPATH))
+        self.simulation_logic = DailyExpensesLogic(CurrentSalarySimulation(), ExpensesLogic(self.yaml_file_handler))
         self.daily_expenses = DailyExpensesCLI(self.simulation_logic)
         self.salary_data = SalaryCLI()
-        self.expenses_data = ExpensesCLI()
+        self.expenses_data = ExpensesCLI(SetExpenses(self.yaml_file_handler),
+                                         ShowExpenses(self.yaml_file_handler),
+                                         EditExpenses(self.yaml_file_handler),
+                                         ExpensesKeyExtractor(self.yaml_file_handler))
     
     def show_menu(self):
         print("Daily Expenses Manager")
@@ -96,7 +103,7 @@ class MainMenu:
                 self.salary_data.delete_salary()
         #Expenses menu
         if self.choosen_menu == 3:
-            if self.choosen_sub_menu == 3:
+            if self.choosen_sub_menu == 1:
                 self.expenses_data.show_monthly_expenses()
             elif self.choosen_sub_menu == 2:
                 self.expenses_data.set_monthly_expenses()
