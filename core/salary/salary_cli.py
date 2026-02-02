@@ -1,18 +1,18 @@
-from core.salary.salary_logic import (SalaryBase, CurrentSalarySimulation, ChangeSalarySimulation,
-                               AddNewSalary, EditSalary, DeleteSalary)
 from core.exceptions import (FileError, EmptyDataAppError, DuplicatedDateError,
                              InvalidInputIndexError, YAMLFileNotFoundError,
                              IncorrectTimeFormatError, IncorrectInputSalary,
-                             CSVFileNotFoundError, InvalidFileTypeError,)
+                             CSVFileNotFoundError)
 
 class SalaryCLI:
-    def __init__(self):
-        self.salary_utils = SalaryBase()
-        self.show = CurrentSalarySimulation()
-        self.change = ChangeSalarySimulation()
-        self.add = AddNewSalary()
-        self.edit = EditSalary()
-        self.delete = DeleteSalary()
+    def __init__(self, salary_logic, currrent_salary_simulation,
+                 change_salary_simulation, add_new_salary,
+                 edit_salary, delete_salary):
+        self.salary_utils = salary_logic
+        self.show = currrent_salary_simulation
+        self.change = change_salary_simulation
+        self.add = add_new_salary
+        self.edit = edit_salary
+        self.delete = delete_salary
         self.handle_duplicated_date = False
     
     #helper to input and validate inputted index

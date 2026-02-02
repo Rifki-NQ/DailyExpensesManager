@@ -1,17 +1,14 @@
 import pandas as pd
-from pathlib import Path
-from core.utils import DataIO, CheckInput, Sorter
+from core.utils import CheckInput, Sorter
 from core.exceptions import (MissingSimulationDateError, DuplicatedDateError,
                              IncorrectTimeFormatError, IncorrectInputSalary,
                              InvalidSimulationDateError, EmptyConfigDataError)
+from typing import Optional
 
-class SalaryBase:
-    def __init__(self):
-        self.simulation_date = ""
-        self.SALARY_DATA_FILEPATH = "data/salary_data.csv"
-        self.CONFIG_FILEPATH = "data/config.yaml"
-        self.salary_handler = DataIO.create_dataio(Path(self.SALARY_DATA_FILEPATH))
-        self.config_handler = DataIO.create_dataio(Path(self.CONFIG_FILEPATH))
+class SalaryLogic:
+    def __init__(self, salary_file_handler, config_file_handler):
+        self.salary_handler = salary_file_handler
+        self.config_handler = config_file_handler
 
     def get_all_salary(self) -> pd.DataFrame:
         all_salary = self.salary_handler.read()
@@ -29,10 +26,11 @@ class SalaryBase:
             raise IncorrectInputSalary("salary cannot be lower than 0!")
         return int(salary)
 
-class CurrentSalarySimulation(SalaryBase):
-    def __init__(self):
-        super().__init__()
+class CurrentSalarySimulation(SalaryLogic):
+    def __init__(self, salary_file_handler, config_file_handler):
+        super().__init__(salary_file_handler, config_file_handler)
         self.df_salary = self.salary_handler.read()
+        self.simulation_date: Optional[str] = None
     
     def _load_simulation_date(self) -> int:
         config = self.config_handler.read()
@@ -57,7 +55,7 @@ class CurrentSalarySimulation(SalaryBase):
         salary_data[1] = int(salary_data[1])
         return salary_data
     
-class ChangeSalarySimulation(SalaryBase):
+class ChangeSalarySimulation(SalaryLogic):
     def update_current_simulation(self, index) -> None:
         salary_df = self.get_all_salary()
         index = int(index)
@@ -65,9 +63,9 @@ class ChangeSalarySimulation(SalaryBase):
         updated_simulation = {"current_simulation_date": salary_df.iloc[index, 0]}
         self.config_handler.save(updated_simulation)
         
-class AddNewSalary(SalaryBase):
-    def __init__(self):
-        super().__init__()
+class AddNewSalary(SalaryLogic):
+    def __init__(self, salary_file_handler, config_file_handler):
+        super().__init__(salary_file_handler, config_file_handler)
         self.duplicated_decision = 0
         self.exit_current_process = False
     
@@ -110,13 +108,13 @@ class AddNewSalary(SalaryBase):
             salary_data = Sorter.sort_date(salary_data, "%m-%Y", "%m-%Y")
         self.salary_handler.save(salary_data)
         
-class EditSalary(SalaryBase):
+class EditSalary(SalaryLogic):
     def update_edit_salary(self, index: int, new_salary: int) -> None:
         salary_data = self.get_all_salary()
         salary_data.loc[index, "salary"] = new_salary
         self.salary_handler.save(salary_data)
         
-class DeleteSalary(SalaryBase):
+class DeleteSalary(SalaryLogic):
     def update_delete_salary(self, index: int) -> None:
         salary_data = self.get_all_salary()
         salary_data = salary_data.drop(index=index)

@@ -1,13 +1,13 @@
 from core.salary.salary_cli import SalaryCLI
+from core.salary.salary_logic import (SalaryLogic, CurrentSalarySimulation, ChangeSalarySimulation,
+                                      AddNewSalary, EditSalary, DeleteSalary)
 from core.expenses.expenses_cli import ExpensesCLI
-from core.simulation.simulation_cli import DailyExpensesCLI
-from core.utils import CheckInput
-from core.exceptions import AppError, InvalidInputIndexError
-from core.salary.salary_logic import CurrentSalarySimulation
 from core.expenses.expenses_logic import (ExpensesLogic, SetExpenses, ExpensesKeyExtractor,
                                           ShowExpenses, EditExpenses)
+from core.simulation.simulation_cli import DailyExpensesCLI
 from core.simulation.simulation_logic import DailyExpensesLogic
-from core.utils import DataIO
+from core.utils import DataIO, CheckInput
+from core.exceptions import AppError, InvalidInputIndexError
 from pathlib import Path
 
 class MainMenu:
@@ -18,15 +18,25 @@ class MainMenu:
         self.is_running = True
         self.choosen_menu = 0
         self.choosen_sub_menu = 0
+        self.SALARY_DATA_FILEPATH = "data/salary_data.csv"
+        self.CONFIG_FILEPATH = "data/config.yaml"
         self.MONTHLY_EXPENSES_FILEPATH = "data/monthly_expenses.yaml"
-        self.yaml_file_handler = DataIO.create_dataio(Path(self.MONTHLY_EXPENSES_FILEPATH))
-        self.simulation_logic = DailyExpensesLogic(CurrentSalarySimulation(), ExpensesLogic(self.yaml_file_handler))
+        self.salary_file_handler = DataIO.create_dataio(Path(self.SALARY_DATA_FILEPATH))
+        self.config_file_handler = DataIO.create_dataio(Path(self.CONFIG_FILEPATH))
+        self.monthly_expenses_file_handler = DataIO.create_dataio(Path(self.MONTHLY_EXPENSES_FILEPATH))
+        self.salary_data = SalaryCLI(SalaryLogic(self.salary_file_handler, self.config_file_handler),
+                                     CurrentSalarySimulation(self.salary_file_handler, self.config_file_handler),
+                                     ChangeSalarySimulation(self.salary_file_handler, self.config_file_handler),
+                                     AddNewSalary(self.salary_file_handler, self.config_file_handler),
+                                     EditSalary(self.salary_file_handler, self.config_file_handler),
+                                     DeleteSalary(self.salary_file_handler, self.config_file_handler))
+        self.expenses_data = ExpensesCLI(SetExpenses(self.monthly_expenses_file_handler),
+                                         ShowExpenses(self.monthly_expenses_file_handler),
+                                         EditExpenses(self.monthly_expenses_file_handler),
+                                         ExpensesKeyExtractor(self.monthly_expenses_file_handler))
+        self.simulation_logic = DailyExpensesLogic(CurrentSalarySimulation(self.salary_file_handler, self.config_file_handler),
+                                                   ExpensesLogic(self.monthly_expenses_file_handler))
         self.daily_expenses = DailyExpensesCLI(self.simulation_logic)
-        self.salary_data = SalaryCLI()
-        self.expenses_data = ExpensesCLI(SetExpenses(self.yaml_file_handler),
-                                         ShowExpenses(self.yaml_file_handler),
-                                         EditExpenses(self.yaml_file_handler),
-                                         ExpensesKeyExtractor(self.yaml_file_handler))
     
     def show_menu(self):
         print("Daily Expenses Manager")
