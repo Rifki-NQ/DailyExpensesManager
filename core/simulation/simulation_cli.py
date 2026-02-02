@@ -1,11 +1,12 @@
 from core.exceptions import (InvalidDaysLengthError, FileError)
+from typing import Optional
 
 class DailyExpensesCLI():
     def __init__(self, simulation_logic):
         self.simulation_logic = simulation_logic
-        self.total_salary: int
-        self.salary_date: str
-        self.total_expenses: int
+        self.total_salary: Optional[int] = None
+        self.salary_date: Optional[str] = None
+        self.total_expenses: Optional[int] = None
     
     def load_total_data(self) -> None:
         self.salary_date = self.simulation_logic.get_salary("date")
@@ -13,9 +14,10 @@ class DailyExpensesCLI():
         self.total_expenses = self.simulation_logic.get_expenses()
     
     def prompt_days_length(self) -> int:
+        minimum_days_length, maximum_days_length = self.simulation_logic.get_valid_days_length()
         while True:
             try:
-                days_length = input("Enter days length (1 to 31): ")
+                days_length = input(f"Enter days length ({minimum_days_length} to {maximum_days_length}): ")
                 if self.simulation_logic.validate_days_length(days_length):
                     return int(days_length)
             except InvalidDaysLengthError as e:
@@ -33,6 +35,7 @@ class DailyExpensesCLI():
     def show_daily_expenses(self):
         try:
             self.load_total_data()
+            all_expenses = self.simulation_logic.get_expenses(merge=False)
         except FileError as e:
             print(e)
             return
@@ -44,3 +47,7 @@ class DailyExpensesCLI():
         custom_length_option = self.prompt_option()
         if custom_length_option:
             days_length = self.prompt_days_length()
+        else:
+            days_length = 30
+        dict_daily_expenses = self.simulation_logic.process_daily_expenses(days_length, all_expenses)
+        print("Here")
