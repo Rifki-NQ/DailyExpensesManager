@@ -33,3 +33,9 @@ python main.py
 - Show daily expenses simulation
 - Add new expenses category and value
 - Edit or delete expenses category and value
+
+## TODO
+- add priority level for each monthly expenses value
+- create documentation or help menu for each feature
+- use `data/daily_expenses.yaml` as placeholder for feature show daily expenses simulation
+- select which expenses from `data/monthly_expenses.yaml` will be used for daily expenses simulation and save the configuration in `data/config.yaml`
