@@ -49,8 +49,9 @@ class SalaryCLI:
             print(e)
         
     def add_new_salary(self) -> None:
-        #input new date then validate
         self.add.reset()
+        self.handle_duplicated_date = False
+        #input new date then validate
         while True:
             try:
                 new_date = input("Input the date for your new salary: ")
