@@ -11,7 +11,7 @@ class DailyExpensesCLI():
     def load_total_data(self) -> None:
         self.salary_date = self.simulation_logic.get_salary("date")
         self.total_salary = self.simulation_logic.get_salary("salary")
-        self.total_expenses = self.simulation_logic.get_expenses()
+        self.total_expenses = self.simulation_logic.get_expenses(merge=True)
     
     def prompt_days_length(self) -> int:
         minimum_days_length, maximum_days_length = self.simulation_logic.get_valid_days_length()
@@ -35,7 +35,10 @@ class DailyExpensesCLI():
     def show_daily_expenses(self):
         try:
             self.load_total_data()
-            all_expenses = self.simulation_logic.get_expenses(merge=False)
+            if not self.simulation_logic.is_valid_data_amount(self.total_salary, self.total_expenses):
+                print("current simulation salary is less than current monthly expenses\n"
+                      "impossible to do daily simulation!")
+                return
         except FileError as e:
             print(e)
             return
@@ -49,5 +52,7 @@ class DailyExpensesCLI():
             days_length = self.prompt_days_length()
         else:
             days_length = 30
-        dict_daily_expenses = self.simulation_logic.process_daily_expenses(days_length, all_expenses)
-        print("Here")
+        daily_free_to_spend = self.simulation_logic.process_daily_expenses(days_length,
+                                                                      self.total_salary,
+                                                                      self.total_expenses)
+        print(f"\nYour daily free to spend is: {daily_free_to_spend} / day\n")

@@ -8,5 +8,7 @@ necessary:
 savings:
   reksa_dana: 700000
   gold: 300000
-free_to_spend:
-  subscription: 200000
+entertainment:
+  netflix: 120000
+  spotify: 80000
+

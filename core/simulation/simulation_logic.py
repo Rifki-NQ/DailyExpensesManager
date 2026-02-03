@@ -33,8 +33,12 @@ class DailyExpensesLogic():
             return self.expenses_data.get_total_expenses()
         return self.expenses_data.get_all_expenses(format_data=False)
     
-    def process_daily_expenses(self, days_length: int, all_expenses: dict) -> dict:
-        for category, expenses in all_expenses.items():
-            for expense in expenses.items():
-                all_expenses[category][expense[0]] = round(expense[1] / days_length)
-        return all_expenses
+    #check if total salary is not less than total expenses
+    def is_valid_data_amount(self, total_salary, total_expenses) -> bool:
+        if total_salary > total_expenses:
+            return True
+        return False
+    
+    def process_daily_expenses(self, days_length: int, total_salary: int, total_expenses: int) -> int:
+        expenses_left = total_salary - total_expenses
+        return expenses_left // days_length
