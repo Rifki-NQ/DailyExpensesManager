@@ -3,6 +3,7 @@ A CLI-based app to help users manage expenses based on their monthly salary.
 Users can add their monthly salary and create simulation how they should spend it
 
 ## Features
+- Show daily expenses simulation
 1. Salary DATA
     - Show current salary simulation
     - Change current salary simulation
@@ -29,13 +30,15 @@ Users can add their monthly salary and create simulation how they should spend i
 python main.py
 ```
 
-## Planned Feature
-- Show daily expenses simulation
-- Add new expenses category and value
-- Edit or delete expenses category and value
+## Planned Features
+- Add new expenses category and expense
+- Edit or delete monthly expenses category and expense
+- Add new daily expense
+- Edit or delete daily expense
 
 ## TODO
-- add priority level for each monthly expenses value
+- add new directory for simulation cli and logic
+- use data from `data/daily_expenses.yaml` for daily expenses simulation features
 - create documentation or help menu for each feature
 - use `data/daily_expenses.yaml` as placeholder for feature show daily expenses simulation
 - select which expenses from `data/monthly_expenses.yaml` will be used for daily expenses simulation and save the configuration in `data/config.yaml`
