@@ -1,25 +1,11 @@
-Monthly expenses:
+Daily free to spend: 20000 / day
 
-necessary:
-  meal: 800000 / month 
-  electricity: 200000  / month
-  parents: 400000  / month
-  fuel: 300000 / month
-  installment: 2350000 / month
-  internet: 200000 / month
-savings:
-  reksa_dana: 700000 / month
-  gold: 300000 / month
-free_to_spend:
-  subscription: 200000 / month
-  left: ? //based on how much is left after all monthly expenses - monthly salary
-            minus if monthly salary does not cover all monthly expenses//
+// Data below read from data/daily_expenses.yaml.
+// Entries lower in the file have lower priority when allocating free_to_spend
+// if the available free_to_spend does not fully cover daily expenses.
 
-Daily expenses for [meal], [fuel] and [free_to_spend]:
-//for [free_to_spend], use data from left in monthly expenses data because it's
-the last priority//
-neccessary:
-  meal: 0
-  fuel: 0
-free_to_spend:
-  snack: 0
+free to spend allocation:
+coffee: 10000 / day
+snack: 10000 / day
+ice cream: 0 / day <- // this has value of zero because entries no 1 and 2 (coffee and snack)
+                      // already takes all daily free to spend bills with nothing left for entry no 3 (ice cream)
