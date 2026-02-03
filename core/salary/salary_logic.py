@@ -29,7 +29,6 @@ class SalaryLogic:
 class CurrentSalarySimulation(SalaryLogic):
     def __init__(self, salary_file_handler, config_file_handler):
         super().__init__(salary_file_handler, config_file_handler)
-        self.df_salary = self.salary_handler.read()
         self.simulation_date: Optional[str] = None
     
     def _load_simulation_date(self) -> int:
@@ -44,6 +43,7 @@ class CurrentSalarySimulation(SalaryLogic):
         return config["current_simulation_date"]
             
     def _check_simulation_date(self, date: int) -> bool:
+        self.df_salary = self.salary_handler.read()
         if (self.df_salary["date"] == date).any():
             return False
         return True
