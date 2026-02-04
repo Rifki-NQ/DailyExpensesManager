@@ -72,10 +72,21 @@ class ExpensesLogic:
 class ShowExpenses(ExpensesLogic):
     pass
             
-class SetExpenses(ExpensesLogic):    
+class UpdateExpenses(ExpensesLogic):    
     def update_expenses(self, category_key: str, expenses_key: str, new_expense: int) -> None:
         monthly_expenses = self.yaml_handler.read()
         monthly_expenses[category_key][expenses_key] = new_expense
+        self.yaml_handler.save(monthly_expenses)
+        
+class AddExpenses(ExpensesLogic):
+    def add_new_expense(self, category_name: str, new_expense_name: str, new_expense_value: int) -> None:
+        monthly_expenses = self.yaml_handler.read()
+        monthly_expenses[category_name][new_expense_name] = new_expense_value
+        self.yaml_handler.save(monthly_expenses)
+    
+    def add_new_category_and_expense(self, new_category_name: str, new_expense_name: str, new_expense_value: int) -> None:
+        monthly_expenses = self.yaml_handler.read()
+        monthly_expenses[new_category_name] = {new_expense_name: new_expense_value}
         self.yaml_handler.save(monthly_expenses)
             
 class EditExpenses(ExpensesLogic):

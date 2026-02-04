@@ -2,8 +2,8 @@ from core.salary.salary_cli import SalaryCLI
 from core.salary.salary_logic import (SalaryLogic, CurrentSalarySimulation, ChangeSalarySimulation,
                                       AddNewSalary, EditSalary, DeleteSalary)
 from core.expenses.expenses_cli import ExpensesCLI
-from core.expenses.expenses_logic import (ExpensesLogic, SetExpenses, ExpensesKeyExtractor,
-                                          ShowExpenses, EditExpenses)
+from core.expenses.expenses_logic import (ExpensesLogic, UpdateExpenses, ExpensesKeyExtractor,
+                                          ShowExpenses, AddExpenses, EditExpenses)
 from core.simulation.simulation_cli import DailyExpensesCLI
 from core.simulation.simulation_logic import DailyExpensesLogic
 from core.utils import DataIO, CheckInput
@@ -30,8 +30,9 @@ class MainMenu:
                                      AddNewSalary(self.salary_file_handler, self.config_file_handler),
                                      EditSalary(self.salary_file_handler, self.config_file_handler),
                                      DeleteSalary(self.salary_file_handler, self.config_file_handler))
-        self.expenses_data = ExpensesCLI(SetExpenses(self.monthly_expenses_file_handler),
+        self.expenses_data = ExpensesCLI(UpdateExpenses(self.monthly_expenses_file_handler),
                                          ShowExpenses(self.monthly_expenses_file_handler),
+                                         AddExpenses(self.monthly_expenses_file_handler),
                                          EditExpenses(self.monthly_expenses_file_handler),
                                          ExpensesKeyExtractor(self.monthly_expenses_file_handler))
         self.simulation_logic = DailyExpensesLogic(CurrentSalarySimulation(self.salary_file_handler, self.config_file_handler),
@@ -42,8 +43,8 @@ class MainMenu:
         print("Daily Expenses Manager")
         print("< ------------------ >")
         print("1. Show daily expenses simulation")
-        print("2. Salary DATA")
-        print("3. Expenses DATA")
+        print("2. Salary Management")
+        print("3. Expenses Management")
     
     def show_sub_menu(self):
         print("< ------------------ >")
@@ -56,7 +57,8 @@ class MainMenu:
         elif self.choosen_menu == 3:
             print("1. Show monthly expenses")
             print("2. Update all monthly expenses")
-            print("3. Edit monthly expenses")
+            print("3. Add new monthly expense")
+            print("4. Edit monthly expense")
     
     def input_menu_choices(self):
         while self.is_running:
@@ -116,8 +118,10 @@ class MainMenu:
             if self.choosen_sub_menu == 1:
                 self.expenses_data.show_monthly_expenses()
             elif self.choosen_sub_menu == 2:
-                self.expenses_data.set_monthly_expenses()
+                self.expenses_data.update_monthly_expenses()
             elif self.choosen_sub_menu == 3:
+                self.expenses_data.add_monthly_expenses()
+            elif self.choosen_sub_menu == 4:
                 self.expenses_data.edit_monthly_expenses()
     
     def run(self):
