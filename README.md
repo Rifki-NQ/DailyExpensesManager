@@ -4,17 +4,18 @@ Users can add their monthly salary and create simulation how they should spend i
 
 ## Features
 - Show daily expenses simulation
-1. Salary DATA
+1. Salary Management
     - Show current salary simulation
     - Change current salary simulation
     - Add new salary
     - Edit salary
     - Delete salary
 
-2. Expenses DATA
+2. Expenses Management
     - Show monthly expenses
-    - Set monthly expenses
-    - Edit monthly expenses
+    - Update all monthly expense
+    - Add new monthly expense
+    - Edit monthly expense
 
 ## Requirements
 - Python 3.10+
@@ -31,7 +32,6 @@ python main.py
 ```
 
 ## Planned Features
-- Add new expenses category and expense
 - Edit or delete monthly expenses category and expense
 - Add new daily expense
 - Edit or delete daily expense
