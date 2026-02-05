@@ -3,7 +3,7 @@ from core.salary.salary_logic import (SalaryLogic, CurrentSalarySimulation, Chan
                                       AddNewSalary, EditSalary, DeleteSalary)
 from core.expenses.expenses_cli import ExpensesCLI
 from core.expenses.expenses_logic import (ExpensesLogic, UpdateExpenses, ExpensesKeyExtractor,
-                                          ShowExpenses, AddExpenses, EditExpenses)
+                                          ShowExpenses, AddExpenses, EditExpenses, DeleteExpense)
 from core.simulation.simulation_cli import DailyExpensesCLI
 from core.simulation.simulation_logic import DailyExpensesLogic
 from core.utils import DataIO, CheckInput
@@ -34,6 +34,7 @@ class MainMenu:
                                          ShowExpenses(self.monthly_expenses_file_handler),
                                          AddExpenses(self.monthly_expenses_file_handler),
                                          EditExpenses(self.monthly_expenses_file_handler),
+                                         DeleteExpense(self.monthly_expenses_file_handler),
                                          ExpensesKeyExtractor(self.monthly_expenses_file_handler))
         self.simulation_logic = DailyExpensesLogic(CurrentSalarySimulation(self.salary_file_handler, self.config_file_handler),
                                                    ExpensesLogic(self.monthly_expenses_file_handler))
@@ -59,6 +60,7 @@ class MainMenu:
             print("2. Update all monthly expenses")
             print("3. Add new monthly expense")
             print("4. Edit monthly expense")
+            print("5. Delete monthly expense")
     
     def input_menu_choices(self):
         while self.is_running:
@@ -123,6 +125,8 @@ class MainMenu:
                 self.expenses_data.add_monthly_expenses()
             elif self.choosen_sub_menu == 4:
                 self.expenses_data.edit_monthly_expenses()
+            elif self.choosen_sub_menu == 5:
+                self.expenses_data.delete_monthly_expenses()
     
     def run(self):
         while self.is_running:
@@ -136,5 +140,5 @@ class MainMenu:
                 print(e)
     
 if __name__ == "__main__":
-    app = MainMenu(3, 5, 3)
+    app = MainMenu(3, 5, 5)
     app.run()

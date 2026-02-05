@@ -1,12 +1,15 @@
 from core.exceptions import (FileError, YAMLFileNotFoundError, InvalidInputIndexError)
 from core.utils import CheckInput
+from typing import Optional
 
 class ExpensesCLI:
-    def __init__(self, SetExpenses, ShowExpenses, AddExpenses, EditExpenses, ExpensesKeyExtractor):
+    def __init__(self, SetExpenses, ShowExpenses, AddExpenses,
+                 EditExpenses, DeleteExpenses, ExpensesKeyExtractor):
         self.set_expenses = SetExpenses
         self.show_expenses = ShowExpenses
         self.add_expenses = AddExpenses
         self.edit_expenses = EditExpenses
+        self.delete_expenses = DeleteExpenses
         self.expenses_keys = ExpensesKeyExtractor
         self.monthly_expenses_headers = []
         self.monthly_expenses_keys = []
@@ -124,3 +127,42 @@ class ExpensesCLI:
                                                self.edit_expenses.get_expenses_by_index(expenses_data, index, "expenses"),
                                                int(new_expense))
         print(f"({self.monthly_expenses_keys[index]}) expense edited successfully!\n")
+        
+    def delete_monthly_expenses(self) -> None:
+        print("")
+        try:
+            self.load_keys()
+            expenses_data = self.delete_expenses.get_all_expenses(format_data=False)
+        except FileError as e:
+            print(e)
+            return
+        print("1. Delete a single expense\n"
+              "2. Delete expenses by category")
+        decision = self.prompt_index("Decision (by index): ", 1, 2)
+        category_index: Optional[int] = None
+        category: Optional[str] = None
+        expense_index: Optional[int] = None
+        print("")
+        if decision == 1:
+            index = 0
+            for category, expenses in expenses_data.items():
+                print(f"{category.upper()}")
+                for expense in expenses:
+                    print(f"{index + 1}. {expense}: {expenses[expense]}")
+                    index += 1
+            #get category name based on expense_index using helper method from logic
+            expense_index = self.prompt_index("Select which expense to delete (by index): ", 1, self.monthly_expenses_length)
+            category = self.delete_expenses.get_expenses_by_index(expenses_data, expense_index, "category")
+        elif decision == 2:
+            for index, (category, expenses) in enumerate(expenses_data.items()):
+                print(f"{index + 1}. {category.upper()}")
+                for expense in expenses:
+                    print(f"    {expense}: {expenses[expense]}")
+            category_index = self.prompt_index("Select which category to delete (by index): ", 1, len(self.monthly_expenses_headers))
+        #pass none in the expense_key if the flow is Delete expense by category
+        self.delete_expenses.update_delete_expenses(self.monthly_expenses_headers[category_index - 1] if category_index is not None else category,
+                                                    self.monthly_expenses_keys[expense_index - 1] if expense_index is not None else None)
+        if decision == 1:
+            print(f"{self.monthly_expenses_keys[expense_index - 1]} expense deleted successfully!\n")
+        else:
+            print(f"Category {self.monthly_expenses_headers[category_index - 1]} deleted successfully!\n")

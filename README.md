@@ -16,6 +16,7 @@ Users can add their monthly salary and create simulation how they should spend i
     - Update all monthly expense
     - Add new monthly expense
     - Edit monthly expense
+    - Delete monthly expense
 
 ## Requirements
 - Python 3.10+
@@ -32,12 +33,11 @@ python main.py
 ```
 
 ## Planned Features
-- Edit or delete monthly expenses category and expense
 - Add new daily expense
 - Edit or delete daily expense
 
 ## TODO
-- add new directory for simulation cli and logic
+- add option to edit name of category or expense for feature Edit monthly expense
 - use data from `data/daily_expenses.yaml` for daily expenses simulation features
 - create documentation or help menu for each feature
 - use `data/daily_expenses.yaml` as placeholder for feature show daily expenses simulation

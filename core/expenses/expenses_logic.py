@@ -91,7 +91,15 @@ class AddExpenses(ExpensesLogic):
             
 class EditExpenses(ExpensesLogic):
     def update_edit_expense(self, category_key: str, expenses_key: str, new_expense: int) -> None:
-        #read the original data first, modify it then save it back
         expenses_data = self.yaml_handler.read()
         expenses_data[category_key][expenses_key] = new_expense
         self.yaml_handler.save(expenses_data)
+
+class DeleteExpense(ExpensesLogic):
+    def update_delete_expenses(self, category_key: str, expense_key: str | None = None) -> None:
+        expenses_data = self.yaml_handler.read()
+        expenses_data[category_key].pop(expense_key, None)
+        if expense_key is None:
+            expenses_data.pop(category_key)
+        self.yaml_handler.save(expenses_data)
+        
