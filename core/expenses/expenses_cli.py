@@ -43,6 +43,22 @@ class ExpensesCLI:
                 return int(value)
             print("Inputted value must be in digit!")
     
+    #helper to show expenses list with index on the category
+    def show_indexed_expenses_category(self, expenses_data: dict[str, dict[str, int]]) -> None:
+        for index, (category, expenses) in enumerate(expenses_data.items()):
+                print(f"{index + 1}. {category.upper()}")
+                for expense in expenses:
+                    print(f"    {expense}: {expenses[expense]}")
+    
+    #helper to show expenses list with index on them
+    def show_indexed_expenses(self, expenses_data: dict[str, dict[str, int]]) -> None:
+        index = 1
+        for category, expenses in expenses_data.items():
+            print(f"{category.upper()}")
+            for expense in expenses:
+                print(f"{index}. {expense}: {expenses[expense]}")
+                index += 1
+    
     #from here to below are the main methods
     def show_monthly_expenses(self) -> None:
         print(self.show_expenses.get_all_expenses())
@@ -102,20 +118,14 @@ class ExpensesCLI:
         print("New expense added successfully!\n")
         
     def edit_monthly_expenses(self) -> None:
+        print("")
         try:
             self.load_keys()
             expenses_data = self.edit_expenses.get_all_expenses(format_data=False)
         except FileError as e:
             print(e)
             return
-        print("")
-        index = 1
-        for category in expenses_data:
-            print(f"----- {category.upper()} -----")
-            for expense in expenses_data[category]:
-                print(f"{index}. {expense}")
-                index += 1
-        print("")
+        self.show_indexed_expenses(expenses_data)
         index = self.prompt_index("Select which expense to edit (by index): ", 1, len(self.monthly_expenses_keys))
         index -= 1
         while True:
@@ -144,20 +154,12 @@ class ExpensesCLI:
         expense_index: Optional[int] = None
         print("")
         if decision == 1:
-            index = 0
-            for category, expenses in expenses_data.items():
-                print(f"{category.upper()}")
-                for expense in expenses:
-                    print(f"{index + 1}. {expense}: {expenses[expense]}")
-                    index += 1
+            self.show_indexed_expenses(expenses_data)
             #get category name based on expense_index using helper method from logic
             expense_index = self.prompt_index("Select which expense to delete (by index): ", 1, self.monthly_expenses_length)
             category = self.delete_expenses.get_expenses_by_index(expenses_data, expense_index, "category")
         elif decision == 2:
-            for index, (category, expenses) in enumerate(expenses_data.items()):
-                print(f"{index + 1}. {category.upper()}")
-                for expense in expenses:
-                    print(f"    {expense}: {expenses[expense]}")
+            self.show_indexed_expenses_category(expenses_data)
             category_index = self.prompt_index("Select which category to delete (by index): ", 1, len(self.monthly_expenses_headers))
         #pass none in the expense_key if the flow is Delete expense by category
         self.delete_expenses.update_delete_expenses(self.monthly_expenses_headers[category_index - 1] if category_index is not None else category,
