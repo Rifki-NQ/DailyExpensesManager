@@ -42,3 +42,4 @@ python main.py
 - create documentation or help menu for each feature
 - use `data/daily_expenses.yaml` as placeholder for feature show daily expenses simulation
 - select which expenses from `data/monthly_expenses.yaml` will be used for daily expenses simulation and save the configuration in `data/config.yaml`
+- find out why adding out of range index to the paremeter of method get_keys_by_index from expenses_logic sometime does not return error

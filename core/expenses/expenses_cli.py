@@ -1,4 +1,4 @@
-from core.exceptions import (FileError, YAMLFileNotFoundError, InvalidInputIndexError)
+from core.exceptions import (FileError, IndexError, YAMLFileNotFoundError)
 from core.utils import CheckInput
 from typing import Optional
 
@@ -27,7 +27,7 @@ class ExpensesCLI:
                 index = input(message)
                 if CheckInput.check_digit(index, min_value, max_value):
                     return int(index)
-            except InvalidInputIndexError as e:
+            except IndexError as e:
                 print(e)
 
     #helper
@@ -127,15 +127,14 @@ class ExpensesCLI:
             return
         self.show_indexed_expenses(expenses_data)
         index = self.prompt_index("Select which expense to edit (by index): ", 1, len(self.monthly_expenses_keys))
-        index -= 1
-        while True:
-            new_expense = input(f"Enter new expense for ({self.monthly_expenses_keys[index]}): ")
-            if new_expense.isdigit():
-                break
-            print("Expense must be in digit!")
-        self.edit_expenses.update_edit_expense(self.edit_expenses.get_expenses_by_index(expenses_data, index, "category"),
-                                               self.edit_expenses.get_expenses_by_index(expenses_data, index, "expenses"),
-                                               int(new_expense))
+        index-=1
+        new_expense = self.prompt_value(f"Enter new expense for ({self.monthly_expenses_keys[index]}): ")
+        try:
+            category_key, expense_key = self.edit_expenses.get_keys_by_index(expenses_data, index)
+        except IndexError as e:
+            print(e)
+            return
+        self.edit_expenses.update_edit_expense(category_key, expense_key, new_expense)
         print(f"({self.monthly_expenses_keys[index]}) expense edited successfully!\n")
         
     def delete_monthly_expenses(self) -> None:
@@ -156,8 +155,12 @@ class ExpensesCLI:
             self.show_indexed_expenses(expenses_data)
             #get category name based on expense_index using helper method from logic
             expense_index = self.prompt_index("Select which expense to delete (by index): ", 1, self.monthly_expenses_length)
-            self.delete_expenses.delete_expense(expense_index)
-            print(f"{self.monthly_expenses_keys[expense_index - 1]} expense deleted successfully!\n")
+            try:
+                self.delete_expenses.delete_expense(expense_index)
+            except IndexError as e:
+                print(e)
+                return
+            print(f"expense {self.monthly_expenses_keys[expense_index - 1]} deleted successfully!\n")
         elif decision == 2:
             self.show_indexed_expenses_category(expenses_data)
             category_index = self.prompt_index("Select which category to delete (by index): ", 1, len(self.monthly_expenses_headers))

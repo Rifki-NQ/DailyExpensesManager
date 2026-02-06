@@ -1,6 +1,6 @@
 from typing import Literal
+from core.exceptions import InvalidExpenseIndexError
 ExpensesMergeOptions = Literal["necessary", "savings", "free_to_spend"]
-KeysOption = Literal["category", "expenses"]
 
 class ExpensesKeyExtractor:
     def __init__(self, YAMLFileHandler):
@@ -54,20 +54,15 @@ class ExpensesLogic:
                 merged_expenses += value
             return merged_expenses
     
-    #helper for getting expense by index (based on the 2nd level of the dict total keys)
-    def get_expenses_by_index(self, expenses_data: dict, index: int, returned_key: KeysOption) -> str:
+    #helper for getting category and expense key by index of the expenses
+    def get_keys_by_index(self, expenses_data: dict[str, dict[str, int]], index: int) -> tuple[str, str]:
         count = 1
-        keys = []
         for category, expenses in expenses_data.items():
             for expense in expenses:
                 if count == index:
-                    keys.append(category)
-                    keys.append(expense)
+                    return category, expense
                 count+=1
-        if returned_key == "category":
-            return keys[0]
-        elif returned_key == "expenses":
-            return keys[1]
+        raise InvalidExpenseIndexError("expense index out of range error!")
     
 class ShowExpenses(ExpensesLogic):
     pass
@@ -98,8 +93,7 @@ class EditExpenses(ExpensesLogic):
 class DeleteExpense(ExpensesLogic):
     def delete_expense(self, expense_index: int) -> None:
         expenses_data = self.yaml_handler.read()
-        category_key = self.get_expenses_by_index(expenses_data, expense_index, "category")
-        expense_key = self.get_expenses_by_index(expenses_data, expense_index, "expenses")
+        category_key, expense_key = self.get_keys_by_index(expenses_data, expense_index)
         expenses_data[category_key].pop(expense_key, None)
         self.yaml_handler.save(expenses_data)
     

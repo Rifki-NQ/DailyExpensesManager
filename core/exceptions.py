@@ -42,7 +42,15 @@ class InvalidFileTypeError(FileNotFoundAppError):
     """Raised when an invalid file type is provided (not CSV or YAML)"""
     pass
 
-class InvalidInputIndexError(AppError):
+class IndexError(AppError):
+    """Raised when inputted index is invalid"""
+    pass
+
+class InvalidExpenseIndexError(IndexError):
+    """Raised when provided expense index is out of range"""
+    pass
+
+class InvalidInputIndexError(IndexError):
     """Raised when inputted value is not in the allowed range"""
     pass
 
@@ -63,3 +71,4 @@ class IncorrectInputSalary(FileError):
 
 class InvalidDaysLengthError(TimeError):
     """Raised when inputted days length is invalid"""
+    pass
