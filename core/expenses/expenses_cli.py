@@ -150,21 +150,16 @@ class ExpensesCLI:
               "2. Delete expenses by category")
         decision = self.prompt_index("Decision (by index): ", 1, 2)
         category_index: Optional[int] = None
-        category: Optional[str] = None
         expense_index: Optional[int] = None
         print("")
         if decision == 1:
             self.show_indexed_expenses(expenses_data)
             #get category name based on expense_index using helper method from logic
             expense_index = self.prompt_index("Select which expense to delete (by index): ", 1, self.monthly_expenses_length)
-            category = self.delete_expenses.get_expenses_by_index(expenses_data, expense_index, "category")
+            self.delete_expenses.delete_expense(expense_index)
+            print(f"{self.monthly_expenses_keys[expense_index - 1]} expense deleted successfully!\n")
         elif decision == 2:
             self.show_indexed_expenses_category(expenses_data)
             category_index = self.prompt_index("Select which category to delete (by index): ", 1, len(self.monthly_expenses_headers))
-        #pass none in the expense_key if the flow is Delete expense by category
-        self.delete_expenses.update_delete_expenses(self.monthly_expenses_headers[category_index - 1] if category_index is not None else category,
-                                                    self.monthly_expenses_keys[expense_index - 1] if expense_index is not None else None)
-        if decision == 1:
-            print(f"{self.monthly_expenses_keys[expense_index - 1]} expense deleted successfully!\n")
-        else:
+            self.delete_expenses.delete_category(self.monthly_expenses_headers[category_index - 1])
             print(f"Category {self.monthly_expenses_headers[category_index - 1]} deleted successfully!\n")

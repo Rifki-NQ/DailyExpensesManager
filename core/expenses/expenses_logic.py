@@ -56,7 +56,7 @@ class ExpensesLogic:
     
     #helper for getting expense by index (based on the 2nd level of the dict total keys)
     def get_expenses_by_index(self, expenses_data: dict, index: int, returned_key: KeysOption) -> str:
-        count = 0
+        count = 1
         keys = []
         for category, expenses in expenses_data.items():
             for expense in expenses:
@@ -96,10 +96,15 @@ class EditExpenses(ExpensesLogic):
         self.yaml_handler.save(expenses_data)
 
 class DeleteExpense(ExpensesLogic):
-    def update_delete_expenses(self, category_key: str, expense_key: str | None = None) -> None:
+    def delete_expense(self, expense_index: int) -> None:
         expenses_data = self.yaml_handler.read()
+        category_key = self.get_expenses_by_index(expenses_data, expense_index, "category")
+        expense_key = self.get_expenses_by_index(expenses_data, expense_index, "expenses")
         expenses_data[category_key].pop(expense_key, None)
-        if expense_key is None:
-            expenses_data.pop(category_key)
+        self.yaml_handler.save(expenses_data)
+    
+    def delete_category(self, category_key: str) -> None:
+        expenses_data = self.yaml_handler.read()
+        expenses_data.pop(category_key, None)
         self.yaml_handler.save(expenses_data)
         
