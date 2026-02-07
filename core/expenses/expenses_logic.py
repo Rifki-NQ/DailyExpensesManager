@@ -85,10 +85,36 @@ class AddExpenses(ExpensesLogic):
         self.yaml_handler.save(monthly_expenses)
             
 class EditExpenses(ExpensesLogic):
-    def update_edit_expense(self, category_key: str, expenses_key: str, new_expense: int) -> None:
+    def update_category(self, expenses_data: dict[str, dict[str, int]],
+                        category: dict[str, int]) -> dict[str, dict[str, int]]:
+        """Helper method to update monthly expenses category while preserving its original order
+        
+        Args:
+            expenses_data (dict[str, dict[str, int]]): original expenses data (before merged with the updated category)
+            category (dict[str, int]): monthly expenses category that has updated data inside it
+            
+        Returns:
+            dict[str, dict[str, int]]: new expenses_data with updated category and with preserved order of the category
+            
+        Raises:
+            NotFoundCategoryError: if provided category key does not exist in the provided expenses_data
+        """
+        if not category.keys() in expenses_data.keys():
+            raise
+    
+    def edit_expense_name(self, category_key: str, expense_key: str, new_expense_key: str) -> None:
         expenses_data = self.yaml_handler.read()
-        expenses_data[category_key][expenses_key] = new_expense
+        new_expense_data = {}
+        new_inner_expenses_data = {}
+        for category, expenses in expenses_data.items():
+            for expense in expenses:
+                new_expense_data = {category, expenses}
         self.yaml_handler.save(expenses_data)
+        
+    def edit_expense_value(self, category_key: str, expense_key: str, new_expense_value: int) -> None:
+        expenses_data = self.yaml_handler.read()
+        expenses_data[category_key][expense_key] = new_expense_value
+        self.yaml_handler.save()
 
 class DeleteExpense(ExpensesLogic):
     def delete_expense(self, expense_index: int) -> None:
