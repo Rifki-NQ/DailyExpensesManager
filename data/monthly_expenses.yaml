@@ -1,5 +1,5 @@
 necessary:
-  meal: 800000
+  moel: 800000
   electricity: 200000
   parents: 400000
   fuel: 300000
@@ -11,4 +11,3 @@ savings:
 entertainment:
   netflix: 120000
   spotify: 80000
-

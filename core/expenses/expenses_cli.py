@@ -140,8 +140,9 @@ class ExpensesCLI:
         if decision in (1, 3):
             new_expense_key = self.prompt_name(f"Enter new name for ({expense_key}): ")
             self.edit_expenses.edit_expense_name(category_key, expense_key, new_expense_key)
+            expense_key = new_expense_key if decision == 3 else expense_key
         if decision in (2, 3):
-            new_expense_value = self.prompt_value(f"Enter new expense for ({expense_key}): ")
+            new_expense_value = self.prompt_value(f"Enter new value for ({expense_key}): ")
             self.edit_expenses.edit_expense_value(category_key, expense_key, new_expense_value)
         print(f"({expense_key}) expense edited successfully!\n")
         
