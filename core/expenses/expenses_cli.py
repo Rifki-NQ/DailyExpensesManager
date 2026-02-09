@@ -135,15 +135,21 @@ class ExpensesCLI:
         print(f"\nChoose an action for expense ({expense_key})\n"
               "1. Edit expense name\n"
               "2. Edit expense value\n"
-              "3. Edit expense name and value")
-        decision = self.prompt_index("Decision (by index): ", 1, 3)
+              "3. Edit expense name and value\n"
+              f"4. Edit category name of ({expense_key})")
+        decision = self.prompt_index("Decision (by index): ", 1, 4)
         if decision in (1, 3):
-            new_expense_key = self.prompt_name(f"Enter new name for ({expense_key}): ")
+            new_expense_key = self.prompt_name(f"Enter new name for ({expense_key}) expense: ")
             self.edit_expenses.edit_expense_name(category_key, expense_key, new_expense_key)
             expense_key = new_expense_key if decision == 3 else expense_key
         if decision in (2, 3):
-            new_expense_value = self.prompt_value(f"Enter new value for ({expense_key}): ")
+            new_expense_value = self.prompt_value(f"Enter new value for ({expense_key}) expense: ")
             self.edit_expenses.edit_expense_value(category_key, expense_key, new_expense_value)
+        if decision == 4:
+            new_category_key = self.prompt_name(f"Enter new name for ({category_key}) category: ")
+            self.edit_expenses.edit_category_name(category_key, new_category_key)
+            print(f"({category_key}) category edited successfully!")
+            return
         print(f"({expense_key}) expense edited successfully!\n")
         
     def delete_monthly_expenses(self) -> None:

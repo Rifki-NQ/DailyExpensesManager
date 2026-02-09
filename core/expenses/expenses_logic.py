@@ -97,6 +97,19 @@ class EditExpenses(ExpensesLogic):
                     new_expenses_data[category][expense] = value
         self.yaml_handler.save(new_expenses_data)
         
+    def edit_category_name(self, category_key: str, new_category_key: str) -> None:
+        expenses_data = self.yaml_handler.read()
+        new_expenses_data = {}
+        for category, expenses in expenses_data.items():
+            if category  == category_key:
+                new_expenses_data[new_category_key] = {}
+                category = new_category_key
+            else:
+                new_expenses_data[category] = {}
+            for expense, value in expenses.items():
+                new_expenses_data[category][expense] = value
+        self.yaml_handler.save(new_expenses_data)
+    
     def edit_expense_value(self, category_key: str, expense_key: str, new_expense_value: int) -> None:
         expenses_data = self.yaml_handler.read()
         expenses_data[category_key][expense_key] = new_expense_value
