@@ -4,26 +4,29 @@ from core.salary.salary_logic import (SalaryLogic, CurrentSalarySimulation, Chan
 from core.expenses.expenses_cli import ExpensesCLI
 from core.expenses.expenses_logic import (ExpensesLogic, UpdateExpenses, ExpensesKeyExtractor,
                                           ShowExpenses, AddExpenses, EditExpenses, DeleteExpense)
-from core.simulation.simulation_cli import DailyExpensesCLI
-from core.simulation.simulation_logic import DailyExpensesLogic
+from core.simulation.simulation_cli import DailyExpensesSimulationCLI, DailyExpensesDataCLI
+from core.simulation.simulation_logic import DailyExpensesSimulationLogic, DailyExpensesDataLogic
 from core.utils import DataIO, CheckInput
 from core.exceptions import AppError, InvalidInputIndexError
 from pathlib import Path
 
 class MainMenu:
-    def __init__(self, total_menu, total_sub_menu_first, total_sub_menu_second):
+    def __init__(self, total_menu, total_sub_menu_first, total_sub_menu_second, total_sub_menu_third):
         self.total_menu = total_menu
         self.total_sub_menu_first = total_sub_menu_first
         self.total_sub_menu_second = total_sub_menu_second
+        self.total_sub_menu_third = total_sub_menu_third
         self.is_running = True
         self.choosen_menu = 0
         self.choosen_sub_menu = 0
         self.SALARY_DATA_FILEPATH = "data/salary_data.csv"
         self.CONFIG_FILEPATH = "data/config.yaml"
         self.MONTHLY_EXPENSES_FILEPATH = "data/monthly_expenses.yaml"
+        self.DAILY_EXPENSES_FILEPATH = "data/daily_expenses.yaml"
         self.salary_file_handler = DataIO.create_dataio(Path(self.SALARY_DATA_FILEPATH))
         self.config_file_handler = DataIO.create_dataio(Path(self.CONFIG_FILEPATH))
         self.monthly_expenses_file_handler = DataIO.create_dataio(Path(self.MONTHLY_EXPENSES_FILEPATH))
+        self.daily_expenses_file_handler = DataIO.create_dataio(Path(self.DAILY_EXPENSES_FILEPATH))
         self.salary_data = SalaryCLI(SalaryLogic(self.salary_file_handler, self.config_file_handler),
                                      CurrentSalarySimulation(self.salary_file_handler, self.config_file_handler),
                                      ChangeSalarySimulation(self.salary_file_handler, self.config_file_handler),
@@ -36,20 +39,25 @@ class MainMenu:
                                          EditExpenses(self.monthly_expenses_file_handler),
                                          DeleteExpense(self.monthly_expenses_file_handler),
                                          ExpensesKeyExtractor(self.monthly_expenses_file_handler))
-        self.simulation_logic = DailyExpensesLogic(CurrentSalarySimulation(self.salary_file_handler, self.config_file_handler),
+        self.simulation_logic = DailyExpensesSimulationLogic(CurrentSalarySimulation(self.salary_file_handler, self.config_file_handler),
                                                    ExpensesLogic(self.monthly_expenses_file_handler))
-        self.daily_expenses = DailyExpensesCLI(self.simulation_logic)
+        self.daily_expenses = DailyExpensesSimulationCLI(self.simulation_logic)
+        self.simulation_data_logic = DailyExpensesDataLogic(self.daily_expenses_file_handler)
+        self.daily_expenses_data = DailyExpensesDataCLI(self.simulation_data_logic)
     
     def show_menu(self):
         print("Daily Expenses Manager")
         print("< ------------------ >")
-        print("1. Show daily expenses simulation")
+        print("1. Simulation Menu")
         print("2. Salary Management")
         print("3. Expenses Management")
     
     def show_sub_menu(self):
         print("< ------------------ >")
-        if self.choosen_menu == 2:
+        if self.choosen_menu == 1:
+            print("1. Show daily expenses simulation")
+            print("2. Show daily expenses")
+        elif self.choosen_menu == 2:
             print("1. Show current salary simulation")
             print("2. Change current salary simulation")
             print("3. Add new salary")
@@ -77,8 +85,6 @@ class MainMenu:
     def input_sub_menu_choices(self):
         while self.is_running:
             if self.choosen_menu == 1:
-                break
-            if self.choosen_menu == 2:
                 try:
                     self.choosen_sub_menu = input("Input by index (q to quit): ")
                     if CheckInput.check_digit(self.choosen_sub_menu, 1, self.total_sub_menu_first, quit_option=True):
@@ -88,10 +94,20 @@ class MainMenu:
                         break
                 except InvalidInputIndexError as e:
                     print(e)
-            elif self.choosen_menu == 3:
+            if self.choosen_menu == 2:
                 try:
                     self.choosen_sub_menu = input("Input by index (q to quit): ")
                     if CheckInput.check_digit(self.choosen_sub_menu, 1, self.total_sub_menu_second, quit_option=True):
+                        self.choosen_sub_menu = int(self.choosen_sub_menu)
+                        break
+                    elif self.choosen_sub_menu.lower() == "q":
+                        break
+                except InvalidInputIndexError as e:
+                    print(e)
+            elif self.choosen_menu == 3:
+                try:
+                    self.choosen_sub_menu = input("Input by index (q to quit): ")
+                    if CheckInput.check_digit(self.choosen_sub_menu, 1, self.total_sub_menu_third, quit_option=True):
                         self.choosen_sub_menu = int(self.choosen_sub_menu)
                         break
                     elif self.choosen_sub_menu.lower() == "q":
@@ -102,7 +118,10 @@ class MainMenu:
     def run_choosen_method(self):
         #Main feature
         if self.choosen_menu == 1:
-            self.daily_expenses.show_daily_expenses()
+            if self.choosen_sub_menu == 1:
+                self.daily_expenses.show_daily_simulation()
+            elif self.choosen_sub_menu == 2:
+                self.daily_expenses_data.show_daily_expenses()
         #Salary menu
         if self.choosen_menu == 2:
             if self.choosen_sub_menu == 1:
@@ -140,5 +159,5 @@ class MainMenu:
                 print(e)
     
 if __name__ == "__main__":
-    app = MainMenu(3, 5, 5)
+    app = MainMenu(3, 2, 5, 5)
     app.run()

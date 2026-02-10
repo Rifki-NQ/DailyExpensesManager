@@ -37,7 +37,6 @@ python main.py
 - Edit or delete daily expense
 
 ## TODO
-- add option to edit name of category or expense for feature Edit monthly expense
 - use data from `data/daily_expenses.yaml` for daily expenses simulation features
 - create documentation or help menu for each feature
 - use `data/daily_expenses.yaml` as placeholder for feature show daily expenses simulation

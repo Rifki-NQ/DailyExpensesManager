@@ -1,7 +1,7 @@
 from core.exceptions import (InvalidDaysLengthError, FileError)
 from typing import Optional
 
-class DailyExpensesCLI():
+class DailyExpensesSimulationCLI:
     def __init__(self, simulation_logic):
         self.simulation_logic = simulation_logic
         self.total_salary: Optional[int] = None
@@ -32,7 +32,7 @@ class DailyExpensesCLI():
                 return False
             print("Invalid option inputted! (y = yes, n = no)")
 
-    def show_daily_expenses(self):
+    def show_daily_simulation(self):
         try:
             self.load_total_data()
             if not self.simulation_logic.is_valid_data_amount(self.total_salary, self.total_expenses):
@@ -56,3 +56,11 @@ class DailyExpensesCLI():
                                                                       self.total_salary,
                                                                       self.total_expenses)
         print(f"\nYour daily free to spend is: {daily_free_to_spend} / day\n")
+        
+class DailyExpensesDataCLI:
+    def __init__(self, daily_expenses_data_logic):
+        self.logic = daily_expenses_data_logic
+        
+    def show_daily_expenses(self):
+        print("")
+        print(self.logic.get_daily_expenses(format_data = True))

@@ -1,7 +1,7 @@
 from core.exceptions import (InvalidDaysLengthError)
 from typing import Literal
 
-class DailyExpensesLogic():
+class DailyExpensesSimulationLogic:
     def __init__(self, salary_logic, expenses_logic):
         self.salary_data = salary_logic
         self.expenses_data = expenses_logic
@@ -42,3 +42,10 @@ class DailyExpensesLogic():
     def process_daily_expenses(self, days_length: int, total_salary: int, total_expenses: int) -> int:
         expenses_left = total_salary - total_expenses
         return expenses_left // days_length
+    
+class DailyExpensesDataLogic:
+    def __init__(self, yaml_handler):
+        self.yaml_handler = yaml_handler
+        
+    def get_daily_expenses(self, format_data):
+        return self.yaml_handler.read(format_data = format_data)
