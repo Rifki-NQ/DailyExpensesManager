@@ -3,15 +3,18 @@ A CLI-based app to help users manage expenses based on their monthly salary.
 Users can add their monthly salary and create simulation how they should spend it
 
 ## Features
-- Show daily expenses simulation
-1. Salary Management
+1. Simulation Menu
+    - Show daily expenses simulation
+    - Show daily expenses
+
+2. Salary Management
     - Show current salary simulation
     - Change current salary simulation
     - Add new salary
     - Edit salary
     - Delete salary
 
-2. Expenses Management
+3. Expenses Management
     - Show monthly expenses
     - Update all monthly expense
     - Add new monthly expense
@@ -33,7 +36,6 @@ python main.py
 ```
 
 ## Planned Features
-- Add new daily expense
 - Edit or delete daily expense
 
 ## TODO
