@@ -1,7 +1,24 @@
 from core.exceptions import (InvalidDaysLengthError, FileError)
 from typing import Optional
 
-class DailyExpensesSimulationCLI:
+class BaseCLI:
+    def prompt_option(self) -> bool:
+        while True:
+            option = input("y/n: ")
+            if option.lower() == "y":
+                return True
+            elif option.lower() == "n":
+                return False
+            print("Invalid option inputted! (y = yes, n = no)")
+            
+    def prompt_value(self, message: str) -> int:
+        while True:
+            value = input(message)
+            if value.isdigit():
+                return int(value)
+            print("Inputted value must be in digit!")
+
+class DailyExpensesSimulationCLI(BaseCLI):
     def __init__(self, simulation_logic):
         self.simulation_logic = simulation_logic
         self.total_salary: Optional[int] = None
@@ -22,15 +39,6 @@ class DailyExpensesSimulationCLI:
                     return int(days_length)
             except InvalidDaysLengthError as e:
                 print(e)
-    
-    def prompt_option(self) -> bool:
-        while True:
-            option = input("y/n: ")
-            if option.lower() == "y":
-                return True
-            elif option.lower() == "n":
-                return False
-            print("Invalid option inputted! (y = yes, n = no)")
 
     def show_daily_simulation(self):
         try:
@@ -57,10 +65,22 @@ class DailyExpensesSimulationCLI:
                                                                       self.total_expenses)
         print(f"\nYour daily free to spend is: {daily_free_to_spend} / day\n")
         
-class DailyExpensesDataCLI:
+class DailyExpensesDataCLI(BaseCLI):
     def __init__(self, daily_expenses_data_logic):
         self.logic = daily_expenses_data_logic
         
     def show_daily_expenses(self):
         print("")
         print(self.logic.get_daily_expenses(format_data = True))
+        
+    def add_daily_expenses(self):
+        print("")
+        new_name = input("Enter new daily expense name: ")
+        if self.logic.is_duplicated_name(new_name):
+            print("Inputted name already exist in the data, overwrite?")
+            if not self.prompt_option():
+                return
+        new_value = self.prompt_value("Enter new daily expense value: ")
+        self.logic.add_new_expense(new_name, new_value)
+        print("New daily expense added successfully!\n")
+        

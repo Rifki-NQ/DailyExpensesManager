@@ -47,5 +47,17 @@ class DailyExpensesDataLogic:
     def __init__(self, yaml_handler):
         self.yaml_handler = yaml_handler
         
-    def get_daily_expenses(self, format_data):
+    def get_daily_expenses(self, format_data) -> dict[str, int] | str:
         return self.yaml_handler.read(format_data = format_data)
+    
+    def is_duplicated_name(self, new_name: str) -> bool:
+        expenses_data = self.yaml_handler.read()
+        for name in expenses_data.keys():
+            if name == new_name:
+                return True
+        return False
+    
+    def add_new_expense(self, new_name: str, new_value: int) -> None:
+        expenses_data = self.yaml_handler.read()
+        expenses_data[new_name] = new_value
+        self.yaml_handler.save(expenses_data)

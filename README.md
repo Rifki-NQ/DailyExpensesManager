@@ -6,6 +6,7 @@ Users can add their monthly salary and create simulation how they should spend i
 1. Simulation Menu
     - Show daily expenses simulation
     - Show daily expenses
+    - Add new daily expense
 
 2. Salary Management
     - Show current salary simulation
