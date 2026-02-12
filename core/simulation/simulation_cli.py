@@ -1,7 +1,12 @@
-from core.exceptions import (InvalidDaysLengthError, FileError)
+from core.exceptions import (InvalidDaysLengthError, FileError, IndexError)
+from core.utils import CheckInput
 from typing import Optional
 
 class BaseCLI:
+    def show_indexed_expenses(self, expenses_data: dict[str, int]) -> None:
+        for index, (key, value) in enumerate(expenses_data.items()):
+            print(f"{index + 1}. {key}: {value}")
+    
     def prompt_option(self) -> bool:
         while True:
             option = input("y/n: ")
@@ -17,6 +22,15 @@ class BaseCLI:
             if value.isdigit():
                 return int(value)
             print("Inputted value must be in digit!")
+            
+    def prompt_index(self, message: str, min_value: int, max_value: int) -> int:
+        while True:
+            try:
+                index = input(message)
+                if CheckInput.check_digit(index, min_value, max_value):
+                    return int(index)
+            except IndexError as e:
+                print(e)
 
 class DailyExpensesSimulationCLI(BaseCLI):
     def __init__(self, simulation_logic):
@@ -40,7 +54,7 @@ class DailyExpensesSimulationCLI(BaseCLI):
             except InvalidDaysLengthError as e:
                 print(e)
 
-    def show_daily_simulation(self):
+    def show_daily_simulation(self) -> None:
         try:
             self.load_total_data()
             if not self.simulation_logic.is_valid_data_amount(self.total_salary, self.total_expenses):
@@ -69,11 +83,11 @@ class DailyExpensesDataCLI(BaseCLI):
     def __init__(self, daily_expenses_data_logic):
         self.logic = daily_expenses_data_logic
         
-    def show_daily_expenses(self):
+    def show_daily_expenses(self) -> None:
         print("")
         print(self.logic.get_daily_expenses(format_data = True))
         
-    def add_daily_expenses(self):
+    def add_daily_expenses(self) -> None:
         print("")
         new_name = input("Enter new daily expense name: ")
         if self.logic.is_duplicated_name(new_name):
@@ -84,3 +98,16 @@ class DailyExpensesDataCLI(BaseCLI):
         self.logic.add_new_expense(new_name, new_value)
         print("New daily expense added successfully!\n")
         
+    def edit_daily_expenses(self) -> None:
+        print("")
+        expenses_data = self.logic.get_daily_expenses(format_data = False)
+        self.show_indexed_expenses(expenses_data)
+        index = self.prompt_index("Select which expense to edit (by index): ", 1, len(expenses_data))
+        print("Choose an action:\n"
+              "1. Edit expense name\n"
+              "2. Edit expense value")
+        decision = self.prompt_index("Decision (by index): ", 1, 2)
+        if decision == 1:
+            new_name = input("Enter new name: ")
+            self.logic.edit_expense_name(index, new_name)
+            print("Expense name edited successfully!\n")
