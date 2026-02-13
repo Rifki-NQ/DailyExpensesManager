@@ -7,6 +7,7 @@ Users can add their monthly salary and create simulation how they should spend i
     - Show daily expenses simulation
     - Show daily expenses
     - Add new daily expense
+    - Edit daily expense
 
 2. Salary Management
     - Show current salary simulation
@@ -36,8 +37,8 @@ Users can add their monthly salary and create simulation how they should spend i
 python main.py
 ```
 
-## Planned Features
-- Edit or delete daily expense
+## Planned Feature
+- delete daily expense
 
 ## TODO
 - use data from `data/daily_expenses.yaml` for daily expenses simulation features
