@@ -103,7 +103,7 @@ class DailyExpensesDataCLI(BaseCLI):
         expenses_data = self.logic.get_daily_expenses(format_data = False)
         self.show_indexed_expenses(expenses_data)
         index = self.prompt_index("Select which expense to edit (by index): ", 1, len(expenses_data))
-        print("Choose an action:\n"
+        print("\nChoose an action:\n"
               "1. Edit expense name\n"
               "2. Edit expense value")
         decision = self.prompt_index("Decision (by index): ", 1, 2)
@@ -111,3 +111,7 @@ class DailyExpensesDataCLI(BaseCLI):
             new_name = input("Enter new name: ")
             self.logic.edit_expense_name(index, new_name)
             print("Expense name edited successfully!\n")
+        else:
+            new_value = self.prompt_value("Enter new value: ")
+            self.logic.edit_expense_value(index, new_value)
+            print("Expense value edited successfully!\n")

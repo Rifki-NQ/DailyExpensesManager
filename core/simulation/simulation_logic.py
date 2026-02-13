@@ -52,7 +52,7 @@ class DailyExpensesDataLogic:
         return self.yaml_handler.read(format_data = format_data)
     
     def get_expense_key_by_index(self, expenses_data: dict[str, int], index: int) -> str:
-        count = 0
+        count = 1
         for key in expenses_data.keys():
             if count == index:
                 return key
@@ -74,11 +74,17 @@ class DailyExpensesDataLogic:
     #feature edit expenses
     def edit_expense_name(self, expense_index: int, new_name: str) -> None:
         expenses_data = self.yaml_handler.read()
-        original_name = self.get_expense_key_by_index(expenses_data, expense_index)
+        expense_key = self.get_expense_key_by_index(expenses_data, expense_index)
         new_expenses_data = {}
         for key, value in expenses_data.items():
-            if key == original_name:
+            if key == expense_key:
                 new_expenses_data[new_name] = value
             else:
                 new_expenses_data[key] = value
         self.yaml_handler.save(new_expenses_data)
+        
+    def edit_expense_value(self, expense_index: int, new_value: int) -> None:
+        expenses_data = self.yaml_handler.read()
+        expense_key = self.get_expense_key_by_index(expenses_data, expense_index)
+        expenses_data[expense_key] = new_value
+        self.yaml_handler.save(expenses_data)
