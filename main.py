@@ -57,8 +57,9 @@ class MainMenu:
         if self.choosen_menu == 1:
             print("1. Show daily expenses simulation")
             print("2. Show daily expenses")
-            print("3. Add daily expenses")
-            print("4. Edit daily expenses")
+            print("3. Add daily expense")
+            print("4. Edit daily expense")
+            print("5. Delete daily expense")
         elif self.choosen_menu == 2:
             print("1. Show current salary simulation")
             print("2. Change current salary simulation")
@@ -128,6 +129,8 @@ class MainMenu:
                 self.daily_expenses_data.add_daily_expenses()
             elif self.choosen_sub_menu == 4:
                 self.daily_expenses_data.edit_daily_expenses()
+            elif self.choosen_sub_menu == 5:
+                self.daily_expenses_data.delete_daily_expense()
         #Salary menu
         if self.choosen_menu == 2:
             if self.choosen_sub_menu == 1:
@@ -165,5 +168,5 @@ class MainMenu:
                 print(e)
     
 if __name__ == "__main__":
-    app = MainMenu(3, 4, 5, 5)
+    app = MainMenu(3, 5, 5, 5)
     app.run()

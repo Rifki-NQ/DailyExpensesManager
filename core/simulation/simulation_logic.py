@@ -57,8 +57,12 @@ class DailyExpensesDataLogic:
             if count == index:
                 return key
             count+=1
+            
+    def get_expense_name(self, index: int) -> str:
+        expenses_data = self.yaml_handler.read()
+        return self.get_expense_key_by_index(expenses_data, index)
     
-    #feature add new expenses
+    #feature add new expense
     def is_duplicated_name(self, new_name: str) -> bool:
         expenses_data = self.yaml_handler.read()
         for name in expenses_data.keys():
@@ -71,7 +75,7 @@ class DailyExpensesDataLogic:
         expenses_data[new_name] = new_value
         self.yaml_handler.save(expenses_data)
     
-    #feature edit expenses
+    #feature edit expense
     def edit_expense_name(self, expense_index: int, new_name: str) -> None:
         expenses_data = self.yaml_handler.read()
         expense_key = self.get_expense_key_by_index(expenses_data, expense_index)
@@ -87,4 +91,11 @@ class DailyExpensesDataLogic:
         expenses_data = self.yaml_handler.read()
         expense_key = self.get_expense_key_by_index(expenses_data, expense_index)
         expenses_data[expense_key] = new_value
+        self.yaml_handler.save(expenses_data)
+        
+    #feature delete expense
+    def delete_expense(self, expense_index: int) -> None:
+        expenses_data = self.yaml_handler.read()
+        expense_key = self.get_expense_key_by_index(expenses_data, expense_index)
+        expenses_data.pop(expense_key, None)
         self.yaml_handler.save(expenses_data)

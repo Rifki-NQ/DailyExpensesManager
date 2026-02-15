@@ -115,3 +115,16 @@ class DailyExpensesDataCLI(BaseCLI):
             new_value = self.prompt_value("Enter new value: ")
             self.logic.edit_expense_value(index, new_value)
             print("Expense value edited successfully!\n")
+            
+    def delete_daily_expense(self) -> None:
+        print("")
+        expenses_data = self.logic.get_daily_expenses(format_data = False)
+        self.show_indexed_expenses(expenses_data)
+        index = self.prompt_index("Select which expense to delete (by index): ", 1, len(expenses_data))
+        expense_name = self.logic.get_expense_name(index)
+        print(f"Delete expense ({expense_name})?")
+        if not self.prompt_option():
+            print("Delete expense cancelled!\n")
+            return
+        self.logic.delete_expense(index)
+        print("Expense deleted successfully!\n")
